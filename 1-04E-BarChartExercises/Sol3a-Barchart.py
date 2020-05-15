@@ -20,6 +20,7 @@ data = [go.Bar(
     name=response
 ) for response in df.columns]
 
+print(data)
 # create a layout, remember to set the barmode here
 layout = go.Layout(
     title='Mock Survey Results',
