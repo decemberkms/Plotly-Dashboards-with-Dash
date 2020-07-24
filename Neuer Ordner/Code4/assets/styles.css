@@ -1,0 +1,90 @@
+body {
+	font-family: Overpass;
+}
+
+h5 {
+	font-family: Overpass;
+}
+
+#body-container {
+					width: 1365px;
+					display: block;
+					/* background-color: #eee; */
+					margin-left: auto;
+					margin-right: auto;
+				}
+.content-box1 {
+				font-family: Overpass;
+				-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+				-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+				box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+ 				}
+
+.content-box2 {
+					text-align: center;
+					font-size: 2em;
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					}
+
+.content-box3 {
+					text-align: left;
+					font-size: 1em;
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+				}
+
+.graph-container-1 {
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					}
+
+.graph-container-2 {
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					}
+
+.graph-container-3 {
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					}
+
+.table-container {
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					}
+
+
+ /* this is only for table crop of first and end columns*/
+
+.table-container .row {
+					  margin: 0;
+					}
+
+.selected-lot-displayer{
+					font-family: Overpass;
+					-webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+					}
+
+.selected-lot-displayer .row {
+					  margin: 0;
+					}
+
+#yield_span {
+			font-size: 0.5em;
+			font-family: Overpass;
+			}
