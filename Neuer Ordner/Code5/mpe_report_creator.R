@@ -122,15 +122,19 @@ writeData(wb, sheet=1, x=df0_1, xy= c("A", 14), colNames = FALSE) # > package op
 #---------------------  save excel file
 saveWorkbook(wb, paste("MPE Report//372S00032_FMMT614-7-55_MPE_", YY, "_WW", WW, '.xlsx', sep=""), overwrite=TRUE) # > package openxlsx
 
+df0_1[!complete.cases(df0_1),]
+
+?complete.cases()
 
 
 
 
 
-
-
-
+df0_1 <- cbind(Charge = 0, Testdatum = 0, df0_1)
 df0_1
-
-
-
+year = "2008"
+mnth = "1"
+day = "31"
+url = sprintf("https:.../KBOS/%s/%s/%s/DailyHistory.html", year, mnth, day)
+url
+Sys.time

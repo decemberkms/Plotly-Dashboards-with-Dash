@@ -27,7 +27,7 @@ server <- function(input, output,session) {
     setwd("W://Technology//NY-FMMT614-7-55//FT")
 
     df_zero <- reactiveFileReader(5000, session, filePath ="FT_statistic//NY_bin_statistics.xlsx",readFunc = read_excel)
-    df_limit_zero <- reactiveFileReader(5000, session, filePath ="FT_statistic//MPE_limit.xlsx", readFunc = read_excel)
+    df_limit_zero <- reactiveFileReader(5000, session, filePath ="FT_statistic//MPE_limit_update_limit.xlsx", readFunc = read_excel)
     
     
     output$mytable = DT::renderDataTable({
@@ -144,7 +144,7 @@ server <- function(input, output,session) {
         
         #---------------- add dummy columns to the front
         df_limit <- cbind(Charge = 0, Testdatum = 0, df_limit)
-        df0_1 <- rbind(df_limit,df0_1)
+        df0_1 <- rbind(df_limit, df0_1)
         df0_1$Charge[1] <- 'MPE Limits'
         
         ###################### Data generation done ######################  
@@ -152,39 +152,37 @@ server <- function(input, output,session) {
        
         datatable(df0_1) %>% formatStyle(
             'FMMT614',
-            backgroundColor = styleInterval(c(df_limit$FMMT614[1]), c('red', 'white')) 
+            backgroundColor = styleInterval(c(df_limit$FMMT614[1])-0.001, c('#d63447', 'white')) 
             ) %>% formatStyle(
                 'Offen',
-                backgroundColor = styleInterval(c(df_limit$Offen[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$Offen[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'Kurzschluss',
-                backgroundColor = styleInterval(c(df_limit$Kurzschluss[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$Kurzschluss[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'ICBO',
-                backgroundColor = styleInterval(c(df_limit$ICBO[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$ICBO[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'ICES',
-                backgroundColor = styleInterval(c(df_limit$ICES[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$ICES[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'IEBO',
-                backgroundColor = styleInterval(c(df_limit$IEBO[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$IEBO[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'VCESAT',
-                backgroundColor = styleInterval(c(df_limit$VCESAT[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$VCESAT[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'VBESAT',
-                backgroundColor = styleInterval(c(df_limit$VBESAT[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$VBESAT[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
                 'RTH',
-                backgroundColor = styleInterval(c(df_limit$RTH[1]), c('white', 'red')) 
+                backgroundColor = styleInterval(c(df_limit$RTH[1]), c('white', '#d63447')) 
             ) %>% formatStyle(
-                'Charge', target = 'row',
-                backgroundColor = styleEqual("MPE Limits", "green") 
+                'Charge',
+                backgroundColor = styleEqual(c('MPE Limits'), c('#a2de96')) 
             )
     })
 }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
-?styleInterval()

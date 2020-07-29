@@ -87,9 +87,9 @@ all_options2 = {
     'Die Anzahl': ['aaaa', 'bbb', 'ccc cc'],
     'Package': ['ffsd', 'vxcv', 'xv'],
     'Device Grop': ['sad', 'bcvb', 'dsadsa'],
-    '2018': ['1', '2019', '2020'],
-    '2019': ['??', '?!?!', '###'],
-    '2020': ['gbnb', 'fasf', '35235']
+    '2018': ['per Package', 'per Wire', 'per Class'],
+    '2019': ['per Package', 'per Wire', 'per Class'],
+    '2020': ['per Package', 'per Wire', 'per Class']
 }
 
 
@@ -418,6 +418,7 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
                     {'name': 'Output', 'id': 'final_test_output'},
                     {'name': 'Auebeute', 'id': 'final_test_yield'},
                     {'name': 'Ursache', 'id': 'cause_ex'},
+                    {'name': 'Erstellungsdatum', 'id': 'create_date'},
                     {'name': 'Editdatum', 'id': 'edit_date'},
                     {'name': 'Editer', 'id': 'edit_user'},
                     {'name': 'Wafer (Menge(probed/unprobed))', 'id': 'wafer_info'}]
@@ -932,98 +933,266 @@ def q_plot_generator(time_period, second_value, third_value):
             return fig_Q_1
     elif time_period == 'year':
         if second_value == '2018':
-            df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
+            if third_value == 'per Class':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
 
-            fig_Q_1 = go.Figure(
-                            data = [go.Bar(
-                                        x = df_Q_plot.groupby(['month'])['a_lot'].count().index,
-                                        y = df_Q_plot.groupby(['month'])['a_lot'].count().values,
-                                        # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
-                                        # name = 'Output diff.',
-                                        # hoverinfo = 'x+y+name',
-                                        # marker = dict(color=color1.tolist()),
-                                        # showlegend=False
-                                        )],
-                            layout = go.Layout(
-                                        title = 'title',
-                                        # titlefont=dict(color= 'black', size=21, family = 'inherit'),
-                                        # paper_bgcolor='white',
-                                        # plot_bgcolor= '#d6e5fa',
-                                        # autosize = False,
-                                        # width = 1500,
-                                        # height = 380,
-                                        hovermode = 'x',
-                                        # legend_orientation="h",
-                                        # legend=dict(x=0.1, y=1.0)
-                                            ))
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['class_name'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(x=0.1, y=1.0)
+                                                ))
 
-            fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                    # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                    # showgrid =True
-                                    )
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
 
-            return fig_Q_1
+                return fig_Q_1
+            elif third_value == 'per Wire':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
+
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['bond_wire'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
+
+                return fig_Q_1
+            elif third_value == 'per Package':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
+
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['package'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
+
+                return fig_Q_1
         elif second_value == '2019':
-            df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
+            if third_value == 'per Class':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
 
-            fig_Q_1 = go.Figure(
-                            data = [go.Bar(
-                                        x = df_Q_plot.groupby(['month'])['a_lot'].count().index,
-                                        y = df_Q_plot.groupby(['month'])['a_lot'].count().values,
-                                        # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
-                                        # name = 'Output diff.',
-                                        # hoverinfo = 'x+y+name',
-                                        # marker = dict(color=color1.tolist()),
-                                        # showlegend=False
-                                        )],
-                            layout = go.Layout(
-                                        title = 'title',
-                                        # titlefont=dict(color= 'black', size=21, family = 'inherit'),
-                                        # paper_bgcolor='white',
-                                        # plot_bgcolor= '#d6e5fa',
-                                        # autosize = False,
-                                        # width = 1500,
-                                        # height = 380,
-                                        hovermode = 'x',
-                                        # legend_orientation="h",
-                                        # legend=dict(x=0.1, y=1.0)
-                                            ))
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['class_name'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
 
-            fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                    # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                    # showgrid =True
-                                    )
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
 
-            return fig_Q_1
+                return fig_Q_1
+            elif third_value == 'per Wire':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
+
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['bond_wire'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
+
+                return fig_Q_1
+            elif third_value == 'per Package':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
+
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['package'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
+
+                return fig_Q_1
         elif second_value == '2020':
-            df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
+            if third_value == 'per Class':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
 
-            fig_Q_1 = go.Figure(
-                            data = [go.Bar(
-                                        x = df_Q_plot.groupby(['month'])['a_lot'].count().index,
-                                        y = df_Q_plot.groupby(['month'])['a_lot'].count().values,
-                                        # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
-                                        # name = 'Output diff.',
-                                        # hoverinfo = 'x+y+name',
-                                        # marker = dict(color=color1.tolist()),
-                                        # showlegend=False
-                                        )],
-                            layout = go.Layout(
-                                        title = 'title',
-                                        # titlefont=dict(color= 'black', size=21, family = 'inherit'),
-                                        # paper_bgcolor='white',
-                                        # plot_bgcolor= '#d6e5fa',
-                                        # autosize = False,
-                                        # width = 1500,
-                                        # height = 380,
-                                        hovermode = 'x',
-                                        # legend_orientation="h",
-                                        # legend=dict(x=0.1, y=1.0)
-                                            ))
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['class_name'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
 
-            fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                    # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                    # showgrid =True
-                                    )
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
 
-            return fig_Q_1
+                return fig_Q_1
+            elif third_value == 'per Wire':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
+
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['bond_wire'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
+
+                return fig_Q_1
+            elif third_value == 'per Package':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
+
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().values,
+                                            name = i) for i in list(df_Q_plot['package'].unique())
+                                        ],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                fig_Q_1.layout.yaxis.update(title = 'title axis',
+                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
+                                        # showgrid =True
+                                        )
+
+                return fig_Q_1
