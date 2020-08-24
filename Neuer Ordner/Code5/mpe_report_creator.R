@@ -22,6 +22,7 @@ setwd("W://Technology//NY-FMMT614-7-55//FT")
 
 #--------------------- read the excel file (NY) as df
 df <- read_excel("FT_statistic//NY_bin_statistics.xlsx")  # >  package readxl
+df_comment <- read_excel("FT_statistic//NY_bin_comment.xlsx")
 
 #--------------------- change to categorical variables- lot, sub lot, bin name and bin number
 df$lot <- factor(df$lot)
@@ -138,3 +139,6 @@ day = "31"
 url = sprintf("https:.../KBOS/%s/%s/%s/DailyHistory.html", year, mnth, day)
 url
 Sys.time
+
+
+df_comment

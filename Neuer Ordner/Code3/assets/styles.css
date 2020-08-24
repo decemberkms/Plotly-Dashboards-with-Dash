@@ -12,30 +12,35 @@
 	padding-top: 25px;
 }
 
+#body-container {
+					width: 1365px;
+					display: block;
+					/* background-color: #eee; */
+					margin-left: auto;
+					margin-right: auto;
+				}
+
 .linkdiv {
--webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+				-webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+				box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
 }
 
 .content-container {
--webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+				-webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+				box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
 }
 
 .small-content-container{
--webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
-}
-
-.small-content-container{
--webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+			-webkit-box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+			box-shadow: 5px 2px 15px 1px rgba(0,0,0,0.55);
+			vertical-align: top;
 }
 
 h4 {
 	font-family: Overpass;
 	font-weight: bold;
 }
+
 /************/
 /* AZQ list */
 /************/
@@ -63,7 +68,7 @@ th {
   border-left: solid white 1px;
   background-color: #6886c5;
   color: rgb(0, 0, 0);
-  font-size: 1.5em;
+  font-size: 1.25em;
   text-align: center;
 }
 
@@ -72,7 +77,7 @@ tr:nth-child(even) {
   border: solid 0.1px;
   border-style: groove;
   border-color: white;
-  font-size: 0.85em;
+  font-size: 0.845em;
 }
 
 tr:nth-child(odd) {
@@ -80,7 +85,7 @@ tr:nth-child(odd) {
   border: solid 0.1px;
   border-style: groove;
   border-color: white;
-  font-size: 0.85em;
+  font-size: 0.845em;
 }
 
 #today-update {
@@ -93,37 +98,6 @@ p {
   font-size: 1rem;
   font-family: Overpass;
   text-align: center;
-}
-
-/******************/
-/* FT information */
-/******************/
-
-.myButton {
-	box-shadow: 3px 4px 0px 0px #1564ad;
-	background:linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
-	background-color:#79bbff;
-	border-radius:5px;
-	border:1px solid #337bc4;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:17px;
-	font-weight:bold;
-	padding:12px 44px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #528ecc;
-  /* position: fixed;
-  top: 0;  */
-}
-.myButton:hover {
-	background:linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
-	background-color:#378de5;
-}
-.myButton:active {
-	position:relative;
-	top:1px;
 }
 
 /*******************/
@@ -196,3 +170,16 @@ p {
 .small-content-container .row {
 					  margin: 0;
 					}
+
+
+/*******************/
+/* Stats */
+/*******************/
+#table-title {
+		font-size: 1em;
+		font-weight: bold;
+		font-family: Overpass;
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+}

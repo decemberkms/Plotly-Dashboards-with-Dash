@@ -15,18 +15,18 @@ from dash.dependencies import Input, Output
 
 from app import app
 
-layout = html.Div(children=[
+layout = html.Div(id = 'body-container', children = [
     html.Div(className="links", children=[
     html.Div(className="linkdiv",  children= [dcc.Link('AZQ List', href='/apps/app1')],
                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'text-align': 'center', 'marginTop':'20px',
                                 'font-size': '2em', 'font-family': 'Overpass'}),
-    html.Div(className="linkdiv",  children= [dcc.Link('F.T. Stats', href='/apps/app2')],
+    html.Div(className="linkdiv",  children= [dcc.Link('Endmessungstats.', href='/apps/app2')],
                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                 'font-size': '2em', 'font-family': 'Overpass'}),
-    html.Div(className="linkdiv",  children= [dcc.Link('F.T. Lot Info.', href='/apps/app3')],
+    html.Div(className="linkdiv",  children= [dcc.Link('Endmessunginfo.', href='/apps/app3')],
                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                 'font-size': '2em', 'font-family': 'Overpass'}),
-    html.Div(className="linkdiv",  children= [dcc.Link('Quality Info.', href='/apps/app4')],
+    html.Div(className="linkdiv",  children= [dcc.Link('Qualitätsinfo.', href='/apps/app4')],
                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                 'font-size': '2em', 'font-family': 'Overpass'})
                                 ],
@@ -38,7 +38,7 @@ layout = html.Div(children=[
     html.Div(id='table-update',style = {'paddingRight': '5%', 'paddingLeft': '5%', 'paddingTop' : '1%'}), html.P(id = 'last-update'),
     html.P(),
     html.Br()
-                ], style = {'width': '86%', 'marginLeft': '7%', 'marginRight': '7%', 'marginTop': '50px', 'marginBottom': '50px'}),
+                ], style = {'width': '1325px', 'marginLeft': '15px', 'marginTop': '50px', 'marginBottom': '35px', 'paddingBottom': '35px'}),
     dcc.Interval(
         id='interval-component',
         interval=1*3600000, # in milliseconds
@@ -111,6 +111,16 @@ def generate_table(n,max_rows=30):
     df_azq.insert(6, 'Startdatum', df_azq['create_date'] + '<br>' + df_azq['create_user'])
     df_azq.insert(9, 'Statusdatum', df_azq['edit_date'] + '<br>' + df_azq['edit_user'])
     df_azq.drop(['create_date', 'create_user','edit_date', 'edit_user'], axis=1, inplace =True)
+
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("           DASHBOARD (AZQ)     ")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("###############################")
 
     return html.Table(
         # Header

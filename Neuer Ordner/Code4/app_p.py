@@ -254,7 +254,7 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
     if duration_for_all_production.days > duration_for_production.days:
         duration_for_production = '<font color="green">' + str(duration_for_production.days) + '</font>' + ' (<font color="green">-' + str(duration_diff) + '</font>)'
     elif duration_for_all_production.days < duration_for_production.days:
-        duration_for_production = '<font color="green">' + str(duration_for_production.days) + '</font>' + ' (<font color="red">+' + str(duration_diff) +'</font>)'
+        duration_for_production = '<font color="red">' + str(duration_for_production.days) + '</font>' + ' (<font color="red">+' + str(abs(duration_diff)) +'</font>)'
     else:
         duration_for_production = '<font color="black">' + str(duration_for_production.days) + '</font>' + ' (<font color="black">+' + str(duration_diff) +'</font>)'
 
@@ -267,7 +267,7 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
     layout_pie = go.Layout(
                         title='Running lots',
                         legend=dict(x=1.3, y=0.95)
-                            )
+                          )
     fig_pie = go.Figure(
                     data=[
                         go.Pie
@@ -276,7 +276,9 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
                             ],
                     layout = layout_pie
                         )
-    # fig_pie.update_layout(autosize=False, width)
+    # fig_pie.update_layout(
+    #                     yaxis_title="Day"
+    #                         )
 
     ####### stacked barchart #######
     bar_pre_data = chart_df.pivot_table(index='current_step', columns='progress2_comment_2',  values='a_lot',aggfunc= lambda x: len(x))
@@ -310,6 +312,7 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
     layout_bar = go.Layout(
                             title='Process information for each step',
                             barmode='stack',
+                            yaxis_title='Number of lots',
                             legend=dict(
                                         x=0,
                                         y=-0.5,
@@ -330,6 +333,7 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
 
     layout_box = go.Layout(
         title='Time taken to each process from the beginning (completed lots)',
+        yaxis_title='Time taken (day)',
         legend=dict())
     fig_box = go.Figure(data=data_box, layout=layout_box)
 
@@ -380,6 +384,16 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
     page_count = math.ceil(len(table_data['a_lot'])/page_size)
     ################# #################
 
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("          PRODUCTION           ")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
     return dash_dangerously_set_inner_html.DangerouslySetInnerHTML('<strong>{}</strong> lots'.format(lot_slider)), dash_dangerously_set_inner_html.DangerouslySetInnerHTML('<strong>{}</strong> lots (<strong>{}%</strong>) released <span id = "yield_span">avg. yield: <strong>{}</strong></span>'.format(released_lot_amount, released_percent, released_lot_total_yield)), \
     dash_dangerously_set_inner_html.DangerouslySetInnerHTML('Avg. Period : <strong>{}</strong> days <br><font color="orange"><strong>{}</strong></font> lots blocked or Q-issue <br> <font color="blue"><strong>{}</strong></font> lots before start'.format(duration_for_production, problem_lots, ready_lots)), \
     fig_pie, fig_bar, fig_box, table_data.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'), page_count
@@ -426,8 +440,18 @@ def update_selected_row(rows, derived_virtual_data):
     ## datetime to StringIO
     selected_lot_process['done_date'] = selected_lot_process['done_date'].astype(str)
 
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("          PRODUCTION           ")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
     return selected_lot_process.to_dict('records')
 
 if __name__ == '__main__':
-    app.run_server(debug=False, port=8050, host='0.0.0.0')
-    # app.run_server(debug=False)
+    # app.run_server(debug=False, port=8050, host='0.0.0.0')
+    app.run_server(debug=False)

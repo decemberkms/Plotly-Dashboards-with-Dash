@@ -28,13 +28,15 @@ server <- function(input, output,session) {
 
     df_zero <- reactiveFileReader(5000, session, filePath ="FT_statistic//NY_bin_statistics.xlsx",readFunc = read_excel)
     df_limit_zero <- reactiveFileReader(5000, session, filePath ="FT_statistic//MPE_limit_update_limit.xlsx", readFunc = read_excel)
-    
+    df_comment <- reactiveFileReader(5000, session, filePath ="FT_statistic//NY_bin_comment.xlsx", readFunc = read_excel)
     
     output$mytable = DT::renderDataTable({
         ##################### Data generation######################
         #--------------------- change to categorical variables- lot, sub lot, bin name and bin number
         df <- df_zero()
         df_limit <- df_limit_zero()
+        df_comment <- df_comment()
+        as.data.frame(df_comment)
         
         df$lot <- factor(df$lot)
         df$sub_lot <- factor(df$sub_lot)
@@ -138,48 +140,57 @@ server <- function(input, output,session) {
         
         # ---------------- reverse data and divide quarterly 
         rownames(df0_1) <- NULL
+        
+        ## ------------ combine two columns for comments
+        df0_1 <- merge(df0_1, df_comment, by="Charge")
+        
         df0_1 <- df0_1[235:nrow(df0_1),]
         df0_1 <- df0_1[seq(dim(df0_1)[1],1),] # reverse data
-        
+        print(df0_1)
         
         #---------------- add dummy columns to the front
         df_limit <- cbind(Charge = 0, Testdatum = 0, df_limit)
+        print(df_limit)
         df0_1 <- rbind(df_limit, df0_1)
         df0_1$Charge[1] <- 'MPE Limits'
         
         ###################### Data generation done ######################  
         
-       
+        datatable(df0_1)
         datatable(df0_1) %>% formatStyle(
             'FMMT614',
-            backgroundColor = styleInterval(c(df_limit$FMMT614[1])-0.001, c('#d63447', 'white')) 
+            backgroundColor = styleInterval(c(df_limit$FMMT614[1])-0.001, c('#d63447', 'white'))
             ) %>% formatStyle(
                 'Offen',
-                backgroundColor = styleInterval(c(df_limit$Offen[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$Offen[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'Kurzschluss',
-                backgroundColor = styleInterval(c(df_limit$Kurzschluss[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$Kurzschluss[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'ICBO',
-                backgroundColor = styleInterval(c(df_limit$ICBO[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$ICBO[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'ICES',
-                backgroundColor = styleInterval(c(df_limit$ICES[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$ICES[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'IEBO',
-                backgroundColor = styleInterval(c(df_limit$IEBO[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$IEBO[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'VCESAT',
-                backgroundColor = styleInterval(c(df_limit$VCESAT[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$VCESAT[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'VBESAT',
-                backgroundColor = styleInterval(c(df_limit$VBESAT[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$VBESAT[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'RTH',
-                backgroundColor = styleInterval(c(df_limit$RTH[1]), c('white', '#d63447')) 
+                backgroundColor = styleInterval(c(df_limit$RTH[1]), c('white', '#d63447'))
             ) %>% formatStyle(
                 'Charge',
-                backgroundColor = styleEqual(c('MPE Limits'), c('#a2de96')) 
+                backgroundColor = styleEqual(c('MPE Limits'), c('#a2de96'))
+            ) %>% formatStyle(
+                'Comment_L',
+                target = 'row',
+                backgroundColor = styleEqual(1, c('#d63447'))
             )
     })
 }

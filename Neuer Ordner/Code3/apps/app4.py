@@ -22,6 +22,8 @@ from html.parser import HTMLParser
 
 from app import app
 
+import json
+
 # HTML tag remover for cause and comment
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -77,34 +79,37 @@ PAGE_SIZE = 15
 
 # chain callback for plots
 all_options = {
-    'alltime': ['Die Anzahl', 'Package', 'Device Grop'],
+    'alltime': ['by WPS', 'by FA', 'by Device Group', 'by Wire', 'by Class', 'by Package'],
     'year': ['2018', '2019', '2020']
     # 'monthly': ['??', '?!?!', '###']
 }
 
 # second chain callback for plots
 all_options2 = {
-    'Die Anzahl': ['aaaa', 'bbb', 'ccc cc'],
-    'Package': ['ffsd', 'vxcv', 'xv'],
-    'Device Grop': ['sad', 'bcvb', 'dsadsa'],
-    '2018': ['per Package', 'per Wire', 'per Class'],
-    '2019': ['per Package', 'per Wire', 'per Class'],
-    '2020': ['per Package', 'per Wire', 'per Class']
+    'by WPS': ['None'],
+    'by FA': ['None'],
+    'by Device Group': ['None'],
+    'by Wire': ['None'],
+    'by Class': ['None'],
+    'by Package': ['None'],
+    '2018': ['by WPS', 'by FA', 'by Package', 'by Wire', 'by Class'],
+    '2019': ['by WPS', 'by FA', 'by Package', 'by Wire', 'by Class'],
+    '2020': ['by WPS', 'by FA', 'by Package', 'by Wire', 'by Class']
 }
 
 
-layout = html.Div([
+layout = html.Div(id = 'body-container', children = [
                     html.Div(className="links", children=[
                     html.Div(className="linkdiv",  children= [dcc.Link('AZQ List', href='/apps/app1')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'text-align': 'center', 'marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'}),
-                    html.Div(className="linkdiv",  children= [dcc.Link('F.T. Stats', href='/apps/app2')],
+                    html.Div(className="linkdiv",  children= [dcc.Link('Endmessungstats.', href='/apps/app2')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'}),
-                    html.Div(className="linkdiv",  children= [dcc.Link('F.T. Lot Info.', href='/apps/app3')],
+                    html.Div(className="linkdiv",  children= [dcc.Link('Endmessunginfo.', href='/apps/app3')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'}),
-                    html.Div(className="linkdiv",  children= [dcc.Link('Quality Info.', href='/apps/app4')],
+                    html.Div(className="linkdiv",  children= [dcc.Link('Qualitätsinfo.', href='/apps/app4')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'})
                                                 ],
@@ -112,12 +117,12 @@ layout = html.Div([
                     html.Br(),
                     html.Br(),
                     html.Div(className="content-container", children=[ # content container opener
-                    html.H1(className= 'app_title', children='Quality Information'),
+                    html.H1(className= 'app_title', children='Qualitätstabelle'),
                     html.Div(children=[
                     dcc.RadioItems(id='whatdata2',
                                     options=[
                                         {'label': 'Verkürzte Info.', 'value': 'short'},
-                                        {'label': 'Comment', 'value': 'comment'},
+                                        {'label': 'Kommentar', 'value': 'comment'},
                                         {'label': 'Lagerinfo.', 'value': 'storage'}],
                                     value='short',
                                     labelStyle={'display': 'inline-block', 'marginRight': '2%'}
@@ -250,12 +255,12 @@ layout = html.Div([
                                                         )],
                                             style = {'height': '550px', 'paddingLeft': '0.7%', 'paddingRight': '0.7%','paddingTop' : '0.7%'})],
                                             style={'marginLeft': '3%','marginTop': '1%', 'marginRight': '3%',  'paddingBottom': '3.7%', 'paddingTop': '3.7%', 'marginBottom': '40px'}), # small content container closer
-                    html.H1(className= 'app_title', children='Quality Statistics'),
+                    html.H1(className= 'app_title', children='Qualitätsstatistik'),
                     html.Div(
                             dcc.RadioItems(id='Q-plot-time-period',
                                             options=[
-                                                {'label': 'Yearly', 'value':'year'},
-                                                {'label': 'All time', 'value':'alltime'}
+                                                {'label': 'Jährlich', 'value':'year'},
+                                                {'label': 'Alle Zeit', 'value':'alltime'}
                                                     ],
                                             value='year',
                                             labelStyle={'display': 'inline-block', 'marginRight': '2%'}
@@ -272,8 +277,21 @@ layout = html.Div([
                     html.Div(className= 'small-content-container', children=[
                             dcc.Graph(id='Q-plot')
                                                                             ],
-                                            style={'marginLeft': '3%','marginTop': '1%', 'marginRight': '3%',  'paddingBottom': '3.7%', 'paddingTop': '3.7%'})
-                    ], style = {'width': '86%', 'marginLeft': '7%', 'marginRight': '7%', 'marginTop': '50px', 'marginBottom': '50px', 'paddingBottom': '50px'}) # content container closer
+                                            style={'height':'500px','width': '718px','marginLeft': '15px','marginTop': '15px', 'paddingBottom': '25px', 'paddingTop': '25px', 'display': 'inline-block'}),
+                    html.Div(className= 'small-content-container', children=[
+                            dash_table.DataTable(id='q_table',
+                                                 columns =[
+                                                            {'name': 'Charge', 'id': 'a_lot'},
+                                                            {'name': 'Typ', 'id': 'device'},
+                                                            {'name': 'Q-ID', 'id': 'quality_id'},
+                                                            {'name': 'Class', 'id': 'class_name'}
+                                                            ],
+                                                page_current=0,
+                                                page_size=13,
+                                                page_action='custom'
+                                                )],
+                                            style={'height':'500px','width': '560px','marginLeft': '15px','marginTop': '15px',  'paddingBottom': '25px', 'paddingTop': '25px', 'display': 'inline-block'})
+                    ], style = {'width': '1325px', 'marginLeft': '15px', 'marginTop': '50px', 'marginBottom': '35px', 'paddingBottom': '35px'}) # content container closer
                         ])
 
 # callback for table
@@ -288,6 +306,17 @@ layout = html.Div([
             Input('q-list-table', "filter_query")]
             )
 def render_content(what_data2, page_current, page_size, sort_by, filter):
+
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("           DASHBOARD (Q)       ")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+
     conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
                        user='WebServer',
                        password='W3bS3rv3r',
@@ -320,20 +349,13 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ), \
-        tbl4 AS ( \
-        SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-        FROM ZNGFinalTest.final_test3.tbl_summaries \
-        GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
         ) \
-        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
+        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
         FROM tbl1 \
         LEFT JOIN tbl2 \
         ON tbl2.lot = tbl1.a_lot \
         LEFT JOIN tbl3 \
         ON tbl3.lot = tbl1.a_lot \
-        LEFT JOIN tbl4 \
-        ON tbl4.lot = tbl1.a_lot \
         WHERE quality_id <> 0 \
         ORDER BY quality_id DESC"
 
@@ -350,8 +372,7 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         # NaN or NaT data sorting
         df_a4['delivery_date'] = df_a4['delivery_date'].astype(str)
         df_a4['delivery_date'].replace({'NaT': 'Vor Auslieferung'}, inplace=True)
-        # df_a4['delivery_date'].fillna('Not_yet_delivered x', inplace=True)
-        # df_a4['day'].fillna('Not_delivered', inplace=True)
+
 
         # Q date sorting
         df_a4['edit_date'] = df_a4['edit_date'].astype(str)
@@ -365,10 +386,9 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
 
         df_a4['comment'].fillna('<p>', inplace=True)
         df_a4['comment'] = df_a4['comment'].map(strip_tags)
-        df_a4['transistor_type'].fillna("-", inplace=True)
-        df_a4['ship_package'].fillna("-", inplace=True)
-        df_a4['lead_frame'].fillna("-", inplace=True)
-        df_a4['cause_ex'].fillna("-", inplace=True)
+
+        df_a4['cause'].fillna("-", inplace=True)
+        df_a4['cause'] = df_a4['cause'].map(strip_tags)
 
         # replace wps boolean
         booleanDictionary = {True: 'O', False: 'X'}
@@ -408,7 +428,7 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         columns_s=[
                     {'name': 'Q-ID', 'id': 'quality_id'},
                     {'name': 'Charge', 'id': 'a_lot'},
-                    {'name': 'LS Nummber', 'id': 'ba'},
+                    {'name': 'LS #', 'id': 'ba'},
                     {'name': 'Typ', 'id': 'device'},
                     {'name': 'WPS', 'id': 'wps'},
                     {'name': 'FA', 'id': 'fa'},
@@ -416,12 +436,13 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
                     {'name': 'Schrott', 'id': 'scrapped'},
                     {'name': 'Rejected', 'id': 'rejected'},
                     {'name': 'Output', 'id': 'final_test_output'},
-                    {'name': 'Auebeute', 'id': 'final_test_yield'},
-                    {'name': 'Ursache', 'id': 'cause_ex'},
+                    {'name': 'Ausbeute', 'id': 'final_test_yield'},
+                    {'name': 'Class', 'id': 'class_name'},
+                    {'name': 'Ursache', 'id': 'cause'},
                     {'name': 'Erstellungsdatum', 'id': 'create_date'},
                     {'name': 'Editdatum', 'id': 'edit_date'},
                     {'name': 'Editer', 'id': 'edit_user'},
-                    {'name': 'Wafer (Menge(probed/unprobed))', 'id': 'wafer_info'}]
+                    {'name': 'Wafer: Menge(probed/unprobed))', 'id': 'wafer_info'}]
 
         return df_a4.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'),columns_s, page_count
 
@@ -453,20 +474,13 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ), \
-        tbl4 AS ( \
-        SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-        FROM ZNGFinalTest.final_test3.tbl_summaries \
-        GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
         ) \
-        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
+        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
         FROM tbl1 \
         LEFT JOIN tbl2 \
         ON tbl2.lot = tbl1.a_lot \
         LEFT JOIN tbl3 \
         ON tbl3.lot = tbl1.a_lot \
-        LEFT JOIN tbl4 \
-        ON tbl4.lot = tbl1.a_lot \
         WHERE quality_id <> 0 \
         ORDER BY quality_id DESC"
 
@@ -498,10 +512,11 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
 
         df_a4['comment'].fillna('<p>', inplace=True)
         df_a4['comment'] = df_a4['comment'].map(strip_tags)
-        df_a4['transistor_type'].fillna("-", inplace=True)
-        df_a4['ship_package'].fillna("-", inplace=True)
-        df_a4['lead_frame'].fillna("-", inplace=True)
-        df_a4['cause_ex'].fillna("-", inplace=True)
+        # df_a4['transistor_type'].fillna("-", inplace=True)
+        # df_a4['ship_package'].fillna("-", inplace=True)
+        # df_a4['lead_frame'].fillna("-", inplace=True)
+        df_a4['cause'].fillna("-", inplace=True)
+        df_a4['cause'] = df_a4['cause'].map(strip_tags)
 
         # replace wps boolean
         booleanDictionary = {True: 'O', False: 'X'}
@@ -541,26 +556,26 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         columns_s=[
                     {'name': 'Q-ID', 'id': 'quality_id'},
                     {'name': 'Charge', 'id': 'a_lot'},
-                    {'name': 'LS Nummber', 'id': 'ba'},
+                    {'name': 'LS #', 'id': 'ba'},
                     {'name': 'Typ', 'id': 'device'},
-                    {'name': 'Wire1', 'id': 'bond_wire'},
+                    {'name': 'Wire', 'id': 'bond_wire'},
+                    {'name': 'Kommentar', 'id': 'comment'},
                     {'name': 'WPS', 'id': 'wps'},
                     {'name': 'FA', 'id': 'fa'},
                     {'name': 'Lieferung', 'id': 'release'},
                     {'name': 'Schrott', 'id': 'scrapped'},
                     {'name': 'Rejected', 'id': 'rejected'},
                     {'name': 'Output', 'id': 'final_test_output'},
-                    {'name': 'Auebeute', 'id': 'final_test_yield'},
-                    {'name': 'Ursache', 'id': 'cause_ex'},
+                    {'name': 'Ausbeute', 'id': 'final_test_yield'},
+                    {'name': 'Class', 'id': 'class_name'},
+                    {'name': 'Ursache', 'id': 'cause'},
                     {'name': 'Ersteller', 'id': 'create_user'},
                     {'name': 'Erstellungsdatum', 'id': 'create_date'},
                     {'name': 'Editer', 'id': 'edit_user'},
-                    {'name': 'Editdatum', 'id': 'edit_date'},
-                    {'name': 'Comment', 'id': 'comment'}
+                    {'name': 'Editdatum', 'id': 'edit_date'}
                     ]
 
         return df_a4.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'),columns_s, page_count
-
     elif what_data2 == "storage":
         query = "WITH tbl1 AS ( \
         SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
@@ -589,11 +604,6 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
         ), \
-        tbl4 AS ( \
-        SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-        FROM ZNGFinalTest.final_test3.tbl_summaries \
-        GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
-        ), \
         tbl5 AS ( \
         SELECT lot, STRING_AGG(CAST(box_class AS NVARCHAR(MAX)), '; ') AS box_class \
         FROM ( \
@@ -607,14 +617,12 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         ) tlb001 \
         GROUP BY lot \
         )  \
-        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article, tbl5.box_class \
+        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl5.box_class \
         FROM tbl1 \
         LEFT JOIN tbl2 \
         ON tbl2.lot = tbl1.a_lot \
         LEFT JOIN tbl3 \
         ON tbl3.lot = tbl1.a_lot \
-        LEFT JOIN tbl4 \
-        ON tbl4.lot = tbl1.a_lot \
         LEFT JOIN tbl5 \
         ON tbl5.lot = tbl1.a_lot \
         WHERE quality_id <> 0 \
@@ -647,12 +655,8 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         df_a4['create_user'] = df_a4['create_user'].str.split('-').str[0].str.capitalize()
         df_a4['create_date'].replace({'NaT': ' '}, inplace=True)
 
-        df_a4['comment'].fillna('<p>', inplace=True)
-        df_a4['comment'] = df_a4['comment'].map(strip_tags)
-        df_a4['transistor_type'].fillna("-", inplace=True)
-        df_a4['ship_package'].fillna("-", inplace=True)
-        df_a4['lead_frame'].fillna("-", inplace=True)
-        df_a4['cause_ex'].fillna("-", inplace=True)
+        df_a4['cause'].fillna("-", inplace=True)
+        df_a4['cause'] = df_a4['cause'].map(strip_tags)
 
         # replace wps boolean
         booleanDictionary = {True: 'O', False: 'X'}
@@ -692,51 +696,19 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
         columns_l=[
                     {'name': 'Q-ID', 'id': 'quality_id'},
                     {'name': 'Charge', 'id': 'a_lot'},
-                    {'name': 'LS Nummber', 'id': 'ba'},
+                    {'name': 'LS #', 'id': 'ba'},
                     {'name': 'Typ', 'id': 'device'},
+                    {'name': 'Storage', 'id': 'box_class'},
                     {'name': 'WPS', 'id': 'wps'},
                     {'name': 'FA', 'id': 'fa'},
                     {'name': 'Lieferung', 'id': 'release'},
                     {'name': 'Schrott', 'id': 'scrapped'},
                     {'name': 'Rejected', 'id': 'rejected'},
                     {'name': 'Output', 'id': 'final_test_output'},
-                    {'name': 'Auebeute', 'id': 'final_test_yield'},
-                    {'name': 'Ursache', 'id': 'cause_ex'},
-                    {'name': 'Storage', 'id': 'box_class'}]
-
-
-                #     {'name': '-', 'id': 'index'},
-                # {'name': 'Q-ID', 'id': 'quality_id'},
-                # {'name': 'Charge', 'id': 'a_lot'},
-                # {'name': 'LS Nummber', 'id': 'ba'},
-                # {'name': 'Typ', 'id': 'device'},
-                # {'name': 'WPS', 'id': 'wps'},
-                # {'name': 'FA', 'id': 'fa'},
-                # {'name': 'Lieferung', 'id': 'release'},
-                # {'name': 'Schrott', 'id': 'scrapped'},
-                # {'name': 'Ursache', 'id': 'cause_ex'},
-                # {'name': 'Ersteller', 'id': 'create_user'},
-                # {'name': 'Erstellungsdatum', 'id': 'create_date'},
-                # {'name': 'Editer', 'id': 'edit_user'},
-                # {'name': 'Editdatum', 'id': 'edit_date'},
-                # {'name': 'Comment', 'id': 'comment'},
-                # {'name': 'GW', 'id': 'final_test_para_fails'},
-                # {'name': 'TA', 'id': 'final_test_gross_fails'},
-                # {'name': 'Rejected', 'id': 'rejected'},
-                # {'name': 'Output', 'id': 'final_test_output'},
-                # {'name': 'Auebeute', 'id': 'final_test_yield'},
-                # {'name': 'LieferD.', 'id': 'delivery_date'},
-                # {'name': 'Transistor', 'id': 'transistor_type'},
-                # {'name': 'Gurt', 'id': 'ship_package'},
-                # {'name': 'Package', 'id': 'package'},
-                # {'name': 'Group', 'id': 'device_group'},
-                # {'name': 'Leadframe', 'id': 'lead_frame'},
-                # {'name': 'Wire1', 'id': 'bond_wire'},
-                # {'name': 'Wire2', 'id': 'bond_wire2'},
-                # {'name': 'Soft Solder', 'id': 'soft_solder'},
-                # {'name': 'Article', 'id': 'article'},
-                # {'name': 'Storage', 'id': 'box_class'},
-                # {'name': 'Wafer (Menge(probed/unprobed))', 'id': 'wafer_info'}]
+                    {'name': 'Ausbeute', 'id': 'final_test_yield'},
+                    {'name': 'Class', 'id': 'class_name'},
+                    {'name': 'Ursache', 'id': 'cause'}
+                    ]
 
         return df_a4.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'), columns_l, page_count
 
@@ -814,7 +786,7 @@ def q_plot_generator(time_period, second_value, third_value):
     FROM ZNGFinalTest.final_test3.tbl_summaries \
     GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
     ) \
-    SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
+    SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
     FROM tbl1 \
     LEFT JOIN tbl2 \
     ON tbl2.lot = tbl1.a_lot \
@@ -835,107 +807,139 @@ def q_plot_generator(time_period, second_value, third_value):
     df_Q_plot['cause'].fillna('<p>', inplace=True)
     df_Q_plot['cause'] = df_Q_plot['cause'].map(strip_tags)
 
+    # replace wps boolean
+    booleanDictionary = {True: 'O', False: 'X'}
+
+    #loop by df_a4 is loop by columns, same as for column in booleandf_a4.columns:
+    for column in df_Q_plot[['wps', 'fa']]:
+        df_Q_plot[column] = df_Q_plot[column].map(booleanDictionary)
 
     if time_period == 'alltime':
-        if second_value == 'Die Anzahl':
-            lst = []
-            for i, j in df_Q_plot.groupby(['year', 'month'])['a_lot'].count().index:
-                 lst.append(str(i) + '_' + str(j))
+        if second_value == 'by WPS':
+            # replace wps boolean
+            booleanDictionary = {'O': 'WPS', 'X': 'Kein WPS'}
+            #loop by df_a4 is loop by columns, same as for column in booleandf_a4.columns:
+            for column in df_Q_plot[['wps', 'fa']]:
+                df_Q_plot[column] = df_Q_plot[column].map(booleanDictionary)
 
             fig_Q_1 = go.Figure(
-                            data = [go.Bar(
-                                        x = lst,
-                                        y = df_Q_plot.groupby(['year', 'month'])['a_lot'].count().values,
-                                        # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
-                                        # name = 'Output diff.',
-                                        # hoverinfo = 'x+y+name',
-                                        # marker = dict(color=color1.tolist()),
-                                        # showlegend=False
-                                        )],
+                            data = go.Pie(
+                                            labels = df_Q_plot.groupby('wps')['a_lot'].count().index,
+                                            values= df_Q_plot.groupby('wps')['a_lot'].count().values,
+                                            name='piechart'
+                                            ),
                             layout = go.Layout(
-                                        title = 'title',
+                                        title = 'All time Q IDs by WPS',
                                         # titlefont=dict(color= 'black', size=21, family = 'inherit'),
-                                        # paper_bgcolor='white',
-                                        # plot_bgcolor= '#d6e5fa',
-                                        # autosize = False,
-                                        # width = 1500,
-                                        # height = 380,
-                                        hovermode = 'x',
-                                        # legend_orientation="h",
-                                        # legend=dict(x=0.1, y=1.0)
-                                            ))
-
-            fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                    # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                    # showgrid =True
-                                    )
+                                        paper_bgcolor='white',
+                                        plot_bgcolor='white',
+                                        legend_orientation="h",
+                                        legend=dict(xanchor="left", yanchor="top", y=-0.3),
+                                        ))
 
             return fig_Q_1
-        elif second_value == 'Package':
+        elif second_value ==  'by FA':
+            # replace wps boolean
+            booleanDictionary = {'O': 'FA', 'X': 'Kein FA'}
+            #loop by df_a4 is loop by columns, same as for column in booleandf_a4.columns:
+            for column in df_Q_plot[['wps', 'fa']]:
+                df_Q_plot[column] = df_Q_plot[column].map(booleanDictionary)
             fig_Q_1 = go.Figure(
-                            data = [go.Bar(
-                                        x = df_Q_plot.groupby('package')['a_lot'].count().sort_values(ascending=False).index,
-                                        y = df_Q_plot.groupby('package')['a_lot'].count().sort_values(ascending=False).values,
-                                        # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
-                                        # name = 'Output diff.',
-                                        # hoverinfo = 'x+y+name',
-                                        # marker = dict(color=color1.tolist()),
-                                        # showlegend=False
-                                        )],
+                            data = go.Pie(
+                                            labels = df_Q_plot.groupby('fa')['a_lot'].count().index,
+                                            values= df_Q_plot.groupby('fa')['a_lot'].count().values,
+                                            name='piechart'
+                                            ),
                             layout = go.Layout(
-                                        title = 'title',
+                                        title = 'All time Q IDs by FA',
                                         # titlefont=dict(color= 'black', size=21, family = 'inherit'),
-                                        # paper_bgcolor='white',
-                                        # plot_bgcolor= '#d6e5fa',
-                                        # autosize = False,
-                                        # width = 1500,
-                                        # height = 380,
-                                        hovermode = 'x',
-                                        # legend_orientation="h",
-                                        # legend=dict(x=0.1, y=1.0)
-                                            ))
-
-            fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                    # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                    # showgrid =True
-                                    )
+                                        paper_bgcolor='white',
+                                        plot_bgcolor='white',
+                                        legend_orientation="h",
+                                        legend=dict(xanchor="left", yanchor="top", y=-0.3),
+                                        ))
 
             return fig_Q_1
-        elif second_value == 'Device Grop':
+        elif second_value ==  'by Package':
+                fig_Q_1 = go.Figure(
+                                data = go.Pie(
+                                                labels = df_Q_plot.groupby('package')['a_lot'].count().index,
+                                                values= df_Q_plot.groupby('package')['a_lot'].count().values,
+                                                name='piechart'
+                                                ),
+                                layout = go.Layout(
+                                            title = 'All time Q IDs by Package',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            paper_bgcolor='white',
+                                            plot_bgcolor='white',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top", y=-0.3),
+                                            ))
+
+                return fig_Q_1
+        elif second_value ==  'by Wire':
             fig_Q_1 = go.Figure(
-                            data = [go.Bar(
-                                        x = df_Q_plot.groupby('device_group')['a_lot'].count().sort_values(ascending=False).index,
-                                        y = df_Q_plot.groupby('device_group')['a_lot'].count().sort_values(ascending=False).values,
-                                        # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
-                                        # name = 'Output diff.',
-                                        # hoverinfo = 'x+y+name',
-                                        # marker = dict(color=color1.tolist()),
-                                        # showlegend=False
-                                        )],
+                            data = go.Pie(
+                                            labels = df_Q_plot.groupby('bond_wire')['a_lot'].count().index,
+                                            values= df_Q_plot.groupby('bond_wire')['a_lot'].count().values,
+                                            name='piechart'
+                                            ),
                             layout = go.Layout(
-                                        title = 'title',
+                                        title = 'All time Q IDs by Wire',
                                         # titlefont=dict(color= 'black', size=21, family = 'inherit'),
-                                        # paper_bgcolor='white',
-                                        # plot_bgcolor= '#d6e5fa',
-                                        # autosize = False,
-                                        # width = 1500,
-                                        # height = 380,
-                                        hovermode = 'x',
-                                        # legend_orientation="h",
-                                        # legend=dict(x=0.1, y=1.0)
-                                            ))
-
-            fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                    # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                    # showgrid =True
-                                    )
+                                        paper_bgcolor='white',
+                                        plot_bgcolor='white',
+                                        legend_orientation="h",
+                                        legend=dict(xanchor="left", yanchor="top", y=-0.3),
+                                        ))
 
             return fig_Q_1
+        elif second_value ==  'by Class':
+            fig_Q_1 = go.Figure(
+                            data = go.Pie(
+                                            labels = df_Q_plot.groupby('class_name')['a_lot'].count().index,
+                                            values= df_Q_plot.groupby('class_name')['a_lot'].count().values,
+                                            name='piechart'
+                                            ),
+                            layout = go.Layout(
+                                        title = 'All time Q IDs by Class',
+                                        # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                        paper_bgcolor='white',
+                                        plot_bgcolor='white',
+                                        legend_orientation="h",
+                                        legend=dict(xanchor="left", yanchor="top", y=-0.3),
+                                        ))
+
+            return fig_Q_1
+        elif second_value == 'by Device Group':
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x = df_Q_plot.groupby('device_group')['a_lot'].count().sort_values(ascending=False).index,
+                                            y = df_Q_plot.groupby('device_group')['a_lot'].count().sort_values(ascending=False).values,
+                                            # y = df_yield_app[package_list(df_yield_app, package_)].pivot_table(index = time_type, columns = df_yield_app['year'], values = 'final_test_output',  aggfunc = np.sum)[year__].diff().values,
+                                            # name = 'Output diff.',
+                                            # hoverinfo = 'x+y+name',
+                                            # marker = dict(color=color1.tolist()),
+                                            # showlegend=False
+                                            )],
+                                layout = go.Layout(
+                                            title = 'title',
+                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            hovermode = 'x',
+                                            # legend_orientation="h",
+                                            # legend=dict(x=0.1, y=1.0)
+                                                ))
+
+                return fig_Q_1
     elif time_period == 'year':
         if second_value == '2018':
-            if third_value == 'per Class':
+            if third_value == 'by Class':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().index,
@@ -943,8 +947,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['class_name'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Class',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -953,18 +957,22 @@ def q_plot_generator(time_period, second_value, third_value):
                                             barmode='stack',
                                             hovermode = 'x',
                                             legend_orientation="h",
-                                            legend=dict(x=0.1, y=1.0)
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
-            elif third_value == 'per Wire':
+            elif third_value == 'by Wire':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().index,
@@ -972,28 +980,34 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['bond_wire'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Wire',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
                                             # width = 1500,
                                             # height = 380,
+                                            showlegend=True,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
 
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
-            elif third_value == 'per Package':
+            elif third_value == 'by Package':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1001,29 +1015,110 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['package'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Package',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
                                             # width = 1500,
                                             # height = 380,
+                                            showlegend=True,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
+                return fig_Q_1
+            elif third_value == 'by WPS':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['wps'] == 'O'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['wps'] == 'O'].groupby('month')['a_lot'].count().values,
+                                            name = 'WPS'),
+                                        go.Bar(
+                                            x=df_Q_plot[df_Q_plot['wps'] == 'X'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['wps'] == 'X'].groupby('month')['a_lot'].count().values,
+                                            name = 'Kein WPS')
+                                        ],
+                                layout = go.Layout(
+                                            title = 'Q-ID by WPS',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            showlegend=True,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
+                                                ))
+                return fig_Q_1
+            elif third_value == 'by FA':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2018]
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['fa'] == 'O'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['fa'] == 'O'].groupby('month')['a_lot'].count().values,
+                                            name = 'FA'),
+                                        go.Bar(
+                                            x=df_Q_plot[df_Q_plot['fa'] == 'X'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['fa'] == 'X'].groupby('month')['a_lot'].count().values,
+                                            name = 'Kein FA')
+                                        ],
+                                layout = go.Layout(
+                                            title = 'Q-ID by FA',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            showlegend=True,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
+                                                ))
                 return fig_Q_1
         elif second_value == '2019':
-            if third_value == 'per Class':
+            if third_value == 'by Class':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1031,8 +1126,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['class_name'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Class',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -1040,19 +1135,23 @@ def q_plot_generator(time_period, second_value, third_value):
                                             # height = 380,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
-            elif third_value == 'per Wire':
+            elif third_value == 'by Wire':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1060,8 +1159,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['bond_wire'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Wire',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -1069,19 +1168,23 @@ def q_plot_generator(time_period, second_value, third_value):
                                             # height = 380,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
-            elif third_value == 'per Package':
+            elif third_value == 'by Package':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1089,8 +1192,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['package'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Package',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -1098,20 +1201,98 @@ def q_plot_generator(time_period, second_value, third_value):
                                             # height = 380,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
+                return fig_Q_1
+            elif third_value == 'by WPS':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['wps'] == 'O'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['wps'] == 'O'].groupby('month')['a_lot'].count().values,
+                                            name = 'WPS'),
+                                        go.Bar(
+                                            x=df_Q_plot[df_Q_plot['wps'] == 'X'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['wps'] == 'X'].groupby('month')['a_lot'].count().values,
+                                            name = 'Kein WPS')
+                                        ],
+                                layout = go.Layout(
+                                            title = 'Q-ID by WPS',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
+                                                ))
+                return fig_Q_1
+            elif third_value == 'by FA':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2019]
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['fa'] == 'O'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['fa'] == 'O'].groupby('month')['a_lot'].count().values,
+                                            name = 'FA'),
+                                        go.Bar(
+                                            x=df_Q_plot[df_Q_plot['fa'] == 'X'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['fa'] == 'X'].groupby('month')['a_lot'].count().values,
+                                            name = 'Kein FA')
+                                        ],
+                                layout = go.Layout(
+                                            title = 'Q-ID by FA',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
+                                                ))
                 return fig_Q_1
         elif second_value == '2020':
-            if third_value == 'per Class':
+            if third_value == 'by Class':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['class_name'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1119,8 +1300,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['class_name'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Class',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -1128,19 +1309,23 @@ def q_plot_generator(time_period, second_value, third_value):
                                             # height = 380,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
-            elif third_value == 'per Wire':
+            elif third_value == 'by Wire':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['bond_wire'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1148,8 +1333,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['bond_wire'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Wire',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -1157,19 +1342,23 @@ def q_plot_generator(time_period, second_value, third_value):
                                             # height = 380,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
-            elif third_value == 'per Package':
+            elif third_value == 'by Package':
                 df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
-
                 fig_Q_1 = go.Figure(
                                 data = [go.Bar(
                                             x=df_Q_plot[df_Q_plot['package'] == i].groupby(['month'])['a_lot'].count().index,
@@ -1177,8 +1366,8 @@ def q_plot_generator(time_period, second_value, third_value):
                                             name = i) for i in list(df_Q_plot['package'].unique())
                                         ],
                                 layout = go.Layout(
-                                            title = 'title',
-                                            # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                            title = 'Q-ID by Package',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
                                             # paper_bgcolor='white',
                                             # plot_bgcolor= '#d6e5fa',
                                             # autosize = False,
@@ -1186,13 +1375,301 @@ def q_plot_generator(time_period, second_value, third_value):
                                             # height = 380,
                                             barmode='stack',
                                             hovermode = 'x',
-                                            # legend_orientation="h",
-                                            # legend=dict(x=0.1, y=1.0)
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
                                                 ))
-
-                fig_Q_1.layout.yaxis.update(title = 'title axis',
-                                        # titlefont=dict(color= 'black', size=16, family = 'inherit'),
-                                        # showgrid =True
-                                        )
-
                 return fig_Q_1
+            elif third_value == 'by WPS':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['wps'] == 'O'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['wps'] == 'O'].groupby('month')['a_lot'].count().values,
+                                            name = 'WPS'),
+                                        go.Bar(
+                                            x=df_Q_plot[df_Q_plot['wps'] == 'X'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['wps'] == 'X'].groupby('month')['a_lot'].count().values,
+                                            name = 'Kein WPS')
+                                        ],
+                                layout = go.Layout(
+                                            title = 'Q-ID by WPS',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
+                                                ))
+                return fig_Q_1
+            elif third_value == 'by FA':
+                df_Q_plot = df_Q_plot[df_Q_plot['year'] == 2020]
+                fig_Q_1 = go.Figure(
+                                data = [go.Bar(
+                                            x=df_Q_plot[df_Q_plot['fa'] == 'O'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['fa'] == 'O'].groupby('month')['a_lot'].count().values,
+                                            name = 'FA'),
+                                        go.Bar(
+                                            x=df_Q_plot[df_Q_plot['fa'] == 'X'].groupby('month')['a_lot'].count().index,
+                                            y=df_Q_plot[df_Q_plot['fa'] == 'X'].groupby('month')['a_lot'].count().values,
+                                            name = 'Kein FA')
+                                        ],
+                                layout = go.Layout(
+                                            title = 'Q-ID by FA',
+                                            titlefont=dict(color= 'black', size=21, family = 'Overpass'),
+                                            # paper_bgcolor='white',
+                                            # plot_bgcolor= '#d6e5fa',
+                                            # autosize = False,
+                                            # width = 1500,
+                                            # height = 380,
+                                            barmode='stack',
+                                            hovermode = 'x',
+                                            legend_orientation="h",
+                                            legend=dict(xanchor="left", yanchor="top"),
+                                            xaxis = {
+                                                    'autorange' : True,
+                                                    'type' : 'category',
+                                                    'categoryarray' : [i for i in range(1,13)],
+                                                    'tickfont' : dict(color= 'black', size=16, family = 'Overpass')
+                                                    },
+                                            yaxis = {
+                                                    'title' : 'Count',
+                                                    'titlefont': dict(color= 'black', size=16, family = 'Overpass'),
+                                                    'showgrid' : True
+                                                    }
+                                                ))
+                return fig_Q_1
+
+@app.callback(
+    [Output('q_table', 'data'),
+    Output('q_table','columns')],
+    [Input('Q-plot-time-period', 'value'),
+     Input('Q-plot-second-radio-item', 'value'),
+     Input('Q-plot-third-radio-item', 'value'),
+     Input('Q-plot', 'clickData'),
+     Input('q_table', "page_current"),
+     Input('q_table', "page_size")])
+def callback_image(time_period, second_value, third_value, clicked_bar, page_current2, page_size2):
+    if clicked_bar is None:
+        clicked_data_month = datetime.today().month
+    else:
+        clicked_data_month = clicked_bar['points'][0]['label']
+
+    conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
+                           user='WebServer',
+                           password='W3bS3rv3r',
+                           database='ZNGFinalTest')
+
+    query_Q_table = "WITH tbl1 AS ( \
+    SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
+    FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
+    LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
+    ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
+    LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
+    ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
+    WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
+    ), \
+    tbl2 AS ( \
+    SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
+    FROM \
+    ( \
+    SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
+    FROM ZNGProduction.catuno.tbl_wafers \
+    WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
+    ) tbl0 \
+    GROUP BY lot \
+    ), \
+    tbl3 AS ( \
+    SELECT ZNGFinalTest.quality.vw_lots.release, ZNGFinalTest.quality.vw_lots.scrapped, ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
+    FROM ZNGFinalTest.quality.vw_last_comments \
+    JOIN ZNGFinalTest.quality.vw_lots \
+    ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
+    JOIN ZNGFinalTest.quality.tbl_classes \
+    ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
+    ), \
+    tbl4 AS ( \
+    SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
+    FROM ZNGFinalTest.final_test3.tbl_summaries \
+    GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
+    ) \
+    SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
+    FROM tbl1 \
+    LEFT JOIN tbl2 \
+    ON tbl2.lot = tbl1.a_lot \
+    LEFT JOIN tbl3 \
+    ON tbl3.lot = tbl1.a_lot \
+    LEFT JOIN tbl4 \
+    ON tbl4.lot = tbl1.a_lot \
+    WHERE quality_id <> 0 \
+    ORDER BY quality_id DESC"
+
+    df_Q_table = pd.read_sql(query_Q_table, conn)
+
+    df_Q_table['year'] =  df_Q_table['create_date'].dt.year
+    df_Q_table['month'] = df_Q_table['create_date'].dt.month
+    df_Q_table['week'] = df_Q_table['create_date'].dt.week
+    df_Q_table['day'] = df_Q_table['create_date'].dt.day
+
+    df_Q_table['cause'].fillna('<p>', inplace=True)
+    df_Q_table['cause'] = df_Q_table['cause'].map(strip_tags)
+
+    if time_period == 'alltime':
+        pass
+    elif time_period == 'year':
+        if second_value == '2018':
+            if third_value == 'by Class':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2018) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Class', 'id': 'class_name'},
+                           ]
+            elif third_value == 'by Wire':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2018) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Wire', 'id': 'bond_wire'},
+                           ]
+            elif third_value == 'by Package':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2018) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Package', 'id': 'package'},
+                           ]
+            elif third_value == 'by WPS':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2018) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'WPS', 'id': 'wps'},
+                           ]
+            elif third_value == 'by FA':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2018) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'FA', 'id': 'fa'},
+                           ]
+        elif second_value == '2019':
+            if third_value == 'by Class':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2019) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Class', 'id': 'class_name'},
+                           ]
+            elif third_value == 'by Wire':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2019) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Wire', 'id': 'bond_wire'},
+                           ]
+            elif third_value == 'by Package':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2019) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Package', 'id': 'package'},
+                           ]
+            elif third_value == 'by WPS':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2019) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'WPS', 'id': 'wps'},
+                           ]
+            elif third_value == 'by FA':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2019) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'FA', 'id': 'fa'},
+                           ]
+        elif second_value == '2020':
+            if third_value == 'by Class':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2020) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Class', 'id': 'class_name'},
+                           ]
+            elif third_value == 'by Wire':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2020) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Wire', 'id': 'bond_wire'},
+                           ]
+            elif third_value == 'by Package':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2020) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'Package', 'id': 'package'},
+                           ]
+            elif third_value == 'by WPS':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2020) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'WPS', 'id': 'wps'},
+                           ]
+            elif third_value == 'by FA':
+                df_Q_table = df_Q_table[(df_Q_table['year'] == 2020) & (df_Q_table['month'] == int(clicked_data_month))]
+                columns =[
+                           {'name': 'Charge', 'id': 'a_lot'},
+                           {'name': 'Typ', 'id': 'device'},
+                           {'name': 'Q-ID', 'id': 'quality_id'},
+                           {'name': 'FA', 'id': 'fa'},
+                           ]
+
+    # replace wps boolean
+    booleanDictionary = {True: 'O', False: 'X'}
+
+    #loop by df_a4 is loop by columns, same as for column in booleandf_a4.columns:
+    for column in df_Q_table[['wps', 'fa']]:
+        df_Q_table[column] = df_Q_table[column].map(booleanDictionary)
+
+    return df_Q_table.sort_values('a_lot', ascending=False).iloc[page_current2*page_size2:(page_current2+ 1)*page_size2].to_dict('records'), columns

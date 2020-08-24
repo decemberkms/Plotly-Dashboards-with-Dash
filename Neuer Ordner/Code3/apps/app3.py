@@ -7,16 +7,19 @@ import plotly.graph_objects as go
 import plotly.offline as py
 
 import dash_core_components as dcc
+from datetime import datetime as dt
 import dash_html_components as html
 import dash_dangerously_set_inner_html
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 
 from datetime import datetime
+import dateutil.relativedelta
 from plotly.subplots import make_subplots
 import dash_table
 # import json
 import math
+import re
 
 from io import StringIO
 from html.parser import HTMLParser
@@ -43,33 +46,6 @@ def strip_tags(html):
 df = pd.read_csv('initial_lot.txt')
 df_package = [i for i in df['package'].unique()]
 df['month'].fillna(1, inplace=True)
-
-# for month
-def month_filter(df, month_update):
-    if len(month_update) == 1:
-        return (df['month'] == month_update[0])
-    elif len(month_update) == 2:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]))
-    elif len(month_update) == 3:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]))
-    elif len(month_update) == 4:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]))
-    elif len(month_update) == 5:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]))
-    elif len(month_update) == 6:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]))
-    elif len(month_update) == 7:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]) | (df['month'] == month_update[6]))
-    elif len(month_update) == 8:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]) | (df['month'] == month_update[6]) | (df['month'] == month_update[7]))
-    elif len(month_update) == 9:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]) | (df['month'] == month_update[6]) | (df['month'] == month_update[7]) | (df['month'] == month_update[8]))
-    elif len(month_update) == 10:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]) | (df['month'] == month_update[6]) | (df['month'] == month_update[7]) | (df['month'] == month_update[8]) | (df['month'] == month_update[9]))
-    elif len(month_update) == 11:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]) | (df['month'] == month_update[6]) | (df['month'] == month_update[7]) | (df['month'] == month_update[8]) | (df['month'] == month_update[9]) | (df['month'] == month_update[10]))
-    elif len(month_update) == 12:
-        return ((df['month'] == month_update[0]) | (df['month'] == month_update[1]) | (df['month'] == month_update[2]) | (df['month'] == month_update[3]) | (df['month'] == month_update[4]) | (df['month'] == month_update[5]) | (df['month'] == month_update[6]) | (df['month'] == month_update[7]) | (df['month'] == month_update[8]) | (df['month'] == month_update[9]) | (df['month'] == month_update[10]) | (df['month'] == month_update[11]))
 
 # for package
 def package_filter(df, package_update):
@@ -195,18 +171,18 @@ def split_filter_part(filter_part):
 
 PAGE_SIZE = 15
 
-layout = html.Div([
+layout = html.Div(id = 'body-container', children =[
                     html.Div(className="links", children=[
                     html.Div(className="linkdiv",  children= [dcc.Link('AZQ List', href='/apps/app1')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'text-align': 'center', 'marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'}),
-                    html.Div(className="linkdiv",  children= [dcc.Link('F.T. Stats', href='/apps/app2')],
+                    html.Div(className="linkdiv",  children= [dcc.Link('Endmessungstats.', href='/apps/app2')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'}),
-                    html.Div(className="linkdiv",  children= [dcc.Link('F.T. Lot Info.', href='/apps/app3')],
+                    html.Div(className="linkdiv",  children= [dcc.Link('Endmessunginfo.', href='/apps/app3')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'}),
-                    html.Div(className="linkdiv",  children= [dcc.Link('Quality Info.', href='/apps/app4')],
+                    html.Div(className="linkdiv",  children= [dcc.Link('Qualitätsinfo.', href='/apps/app4')],
                                         style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '4%', 'text-align': 'center','marginTop':'20px',
                                                 'font-size': '2em', 'font-family': 'Overpass'})
                                                 ],
@@ -214,51 +190,45 @@ layout = html.Div([
                     html.Br(),
                     html.Br(),
                     html.Div(className="content-container", children=[
-                    html.H1(className= 'app_title', children='Finaltest Lot Information'),
+                    html.H1(className= 'app_title', children='Endmessunginformation'),
                     html.Br(),
                     # html.P(className='para1',children="Please select the options below and click on the <Click> button."),
                     html.Div(children=[
                     dcc.RadioItems(id='whatdata',
                                     options=[
                                         {'label': 'Verkürzte Info.', 'value': 'short'},
-                                        {'label': 'Waferinfo.', 'value': 'wafer'},
-                                        {'label': 'Comment', 'value': 'comment'},
+                                        {'label': 'Waferinfo. mit Details', 'value': 'wafer'},
+                                        {'label': 'Kommentar', 'value': 'comment'},
                                         {'label': 'Lagerinfo.', 'value': 'storage'},
-                                        {'label': ' Charge ohne FT data (Datenauswahl nur möglich <Dieser Monat>.)', 'value': 'bevfore_ft'}],  # lots without FT data and without SEN -> Q info is not only for SMD but also SEN
+                                        {'label': ' Charge ohne FT data', 'value': 'bevfore_ft'}],  # lots without FT data and without SEN -> Q info is not only for SMD but also SEN
                                     value='short',
                                     labelStyle={'display': 'inline-block', 'marginRight': '2%'}
                                         )],
                                             style = {'paddingLeft': '5%'}),
-                    html.Div([html.Label('Year'),
-                            dcc.Dropdown(
-                                id='year-update',
-                                options=[{'label': i, 'value':i} for i in sorted(df['year'].dropna().unique())],
-                                # labelStyle={'display': 'inline-block'})
-                                value=datetime.today().year,
-                                multi=False)],
-                                    style={'width':'15%','display': 'inline-block', 'float':'left', 'paddingLeft': '5%'}),
-                    html.Div([html.Label('Month'),
-                            dcc.Dropdown(
-                                id='month-update',
-                                options=[{'label': i, 'value':i} for i in sorted(df['month'].unique())],
-                                value= [datetime.today().month],
-                                multi=True)],
-                                    style={'width':'25%', 'display': 'inline-block', 'float':'left'}),
-                    html.Div([html.Label('Package'),
+                    html.Div([html.Label('Datum'),
+                            dcc.DatePickerRange(
+                                id='date-picker-range',
+                                month_format='MMMM-D-Y',
+                                end_date_placeholder_text='MMMM-D-Y',
+                                start_date=datetime.today() + dateutil.relativedelta.relativedelta(months=-1),
+                                end_date=datetime.today()
+                                )],
+                                    style={'width':'22%', 'display': 'inline-block', 'float':'left', 'marginLeft': '5%'}),
+                    html.Div([html.Label('Gehäuse'),
                             dcc.Dropdown(
                                 id='package-update',
-                                options=[{'label': i, 'value':i} for i in df_package],
-                                value=sorted(df_package),
+                                options=[{'label': i, 'value':i} for i in ['ELineX', 'SOT223', 'SOT23', 'SOT23F', 'SM8', 'LFSOT23']],
+                                value=sorted( ['ELineX', 'SOT223', 'SOT23', 'SOT23F', 'SM8', 'LFSOT23']),
                                 multi=True)],
-                                    style={'width':'40%', 'display': 'inline-block', 'float':'left'}),
-                    html.Div([html.Label('Wire'),
+                                    style={'width':'42%', 'display': 'inline-block', 'float':'left'}),
+                    html.Div([html.Label('Draht'),
                             dcc.Dropdown(
                                 id='wire-update',
                                 options=[{'label': i, 'value':i} for i in df['bond_wire'].unique()],
                                 value= [i for i in df['bond_wire'].unique()],
                                 multi=True)],
-                                    style={'width':'20%', 'display': 'inline-block', 'float':'left', 'paddingRight': '5%'}),
-                    html.Div([html.Label('Device group'),
+                                    style={'width':'23%', 'display': 'inline-block', 'float':'left', 'paddingRight': '5%'}),
+                    html.Div([html.Label('Devicegruppe'),
                             dcc.Dropdown(
                                 id='device-group-update',
                                 options=[{'label': i, 'value':i} for i in sorted(df['device_group'].unique())],
@@ -304,10 +274,10 @@ layout = html.Div([
                                                  {'name': 'Group', 'id': 'device_group'},
                                                  {'name': 'Reject', 'id': 'rejected'},
                                                  {'name': 'Output', 'id': 'final_test_output'},
-                                                 {'name': 'Auebeute', 'id': 'final_test_yield'},
+                                                 {'name': 'Ausbeute', 'id': 'final_test_yield'},
                                                  {'name': 'LieferD.', 'id': 'delivery_date'},
                                                  {'name': 'Q-ID', 'id': 'quality_id'},
-                                                 {'name': 'Ursache', 'id': 'cause_ex'},
+                                                 {'name': 'Class', 'id': 'class_name'},
                                                  {'name': 'Editer', 'id': 'edit_user'},
                                                  {'name': 'Editdatum', 'id': 'edit_date'}],
 
@@ -324,6 +294,102 @@ layout = html.Div([
                                             'overflowX': 'scroll',
                                             'textOverflow': 'ellipsis'},
                                 style_data_conditional=[
+                                                {
+                                                    'if': {
+                                                        'column_id': 'rejected_perc',
+                                                        'filter_query': '{rejected_perc} >= 1.5 && {rejected_perc}  < 2'
+                                                    },
+                                                    'backgroundColor': '#f17808',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'rejected_perc',
+                                                        'filter_query': '{rejected_perc} >= 2'
+                                                    },
+                                                    'backgroundColor': '#d92027',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'ta_perc',
+                                                        'filter_query': '{ta_perc} >= 1.5 && {ta_perc}  < 2'
+                                                    },
+                                                    'backgroundColor': '#f17808',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'ta_perc',
+                                                        'filter_query': '{ta_perc} >= 2'
+                                                    },
+                                                    'backgroundColor': '#d92027',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'gw_perc',
+                                                        'filter_query': '{gw_perc} >= 1.5 && {gw_perc}  < 2'
+                                                    },
+                                                    'backgroundColor': '#f17808',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'gw_perc',
+                                                        'filter_query': '{gw_perc} >= 2'
+                                                    },
+                                                    'backgroundColor': '#d92027',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'final_test_gross_fails',
+                                                        'filter_query': '{final_test_gross_fails} >= 5000 && {final_test_gross_fails}  < 10000'
+                                                    },
+                                                    'backgroundColor': '#f17808',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'final_test_gross_fails',
+                                                        'filter_query': '{final_test_gross_fails} >= 10000 && {final_test_gross_fails}  < 9999999999'
+                                                    },
+                                                    'backgroundColor': '#d92027',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'final_test_gross_fails',
+                                                        'filter_query': '{final_test_gross_fails} >= 9999999999'
+                                                    },
+                                                    'backgroundColor': '#303960',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'final_test_para_fails',
+                                                        'filter_query': '{final_test_para_fails} >= 5000 && {final_test_para_fails}  < 10000'
+                                                    },
+                                                    'backgroundColor': '#f17808',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'final_test_para_fails',
+                                                        'filter_query': '{final_test_para_fails} >= 10000 && {final_test_para_fails}  < 9999999999'
+                                                    },
+                                                    'backgroundColor': '#d92027',
+                                                    'color': 'white'
+                                                },
+                                                {
+                                                    'if': {
+                                                        'column_id': 'final_test_para_fails',
+                                                        'filter_query': '{final_test_para_fails} >= 9999999999'
+                                                    },
+                                                    'backgroundColor': '#303960',
+                                                    'color': 'white'
+                                                },
                                                 {
                                                     'if': {
                                                         'column_id': 'rejected',
@@ -367,15 +433,15 @@ layout = html.Div([
                                                 )],
                                     style = {'height': '540px', 'paddingLeft': '0.7%', 'paddingRight': '0.7%','paddingTop' : '0.7%'})],
                                     style={'marginLeft': '3%', 'marginRight': '3%', 'marginTop': '3.5%', 'paddingBottom': '3.7%'}),
-                    html.Div(className="small-content-container", children = [html.H5("Lot Summary"), dcc.Graph(id='app3-graph-1')],
-                                    style = {'width':'28%', 'marginTop': '3%', 'marginBottom': '1.5%','marginLeft': '0%','display': 'inline-block', 'paddingBottom': '30px', 'float': 'left'}),
+                    html.Div(className="small-content-container", children = [dcc.Graph(id='app3-graph-1')],
+                                    style = {'width':'405px', 'marginTop': '5%', 'marginBottom': '1.5%', 'display': 'inline-block', 'paddingBottom': '30px', 'float': 'left'}),
 
                     html.Div(className="small-content-container", children = [html.H5("TP Summary"), html.Div(id='data-table-2')],
-                                    style = {'width':'28%', 'marginTop': '3%', 'marginBottom': '1.5%','marginLeft': '2%','display': 'inline-block', 'paddingBottom': '30px', 'float': 'left'}),
+                                    style = {'width':'405px', 'marginTop': '5%', 'marginBottom': '1.5%','marginLeft': '15px','display': 'inline-block', 'paddingBottom': '30px', 'float': 'left'}),
 
                     html.Div(className="small-content-container", children = [html.H5("Testdaten"), html.Div(id='data-table-3')],
-                                    style = {'width':'40%', 'marginTop': '3%', 'marginBottom': '1.5%','marginLeft': '2%','marginRight': '0%','display': 'inline-block', 'paddingBottom': '30px', 'float': 'left'})
-                    ],style = {'width': '86%', 'marginLeft': '7%', 'marginRight': '7%', 'marginTop': '50px', 'marginBottom': '50px', 'paddingBottom': '30px'})
+                                    style = {'width':'485px', 'marginTop': '5%', 'marginBottom': '1.5%','marginLeft': '15px','marginRight': '0%','display': 'inline-block', 'paddingBottom': '30px', 'float': 'left'})
+                    ], style = {'width': '1325px', 'marginLeft': '15px',  'marginTop': '50px', 'marginBottom': '35px', 'paddingBottom': '35px'})
 ])
 
 @app.callback(
@@ -388,13 +454,13 @@ layout = html.Div([
          Input('lot-data-table', "sort_by"),
          Input('lot-data-table', "filter_query")],
         [State('whatdata','value'),
-         State('year-update', 'value'),
-         State('month-update', 'value'),
          State('package-update', 'value'),
          State('wire-update', 'value'),
+         State('date-picker-range', 'start_date'),
+         State('date-picker-range', 'end_date'),
          State('device-group-update', 'value')])
 
-def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_data, year_update, month_update, package_update, wire_update, device_g_update):
+def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_data, package_update, wire_update, start_date, end_date, device_g_update):
     conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
                        user='WebServer',
                        password='W3bS3rv3r',
@@ -420,14 +486,6 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ) tbl0 \
         GROUP BY lot \
         ), \
-        tbl3 AS ( \
-        SELECT ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
-        FROM ZNGFinalTest.quality.vw_last_comments \
-        JOIN ZNGFinalTest.quality.vw_lots \
-        ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
-        JOIN ZNGFinalTest.quality.tbl_classes \
-        ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ), \
         tbl4 AS ( \
         SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
         FROM ZNGFinalTest.final_test3.tbl_summaries \
@@ -437,48 +495,26 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         SELECT lot, STRING_AGG(CAST(ba AS NVARCHAR(MAX)), ', ') AS ba \
         FROM ZNGProduction.catuno.tbl_lots \
         GROUP BY lot \
-        ), \
-        tbl6 AS ( \
-        SELECT lot, STRING_AGG(CAST(box_class AS NVARCHAR(MAX)), '; ') AS box_class \
-        FROM ( \
-        SELECT lot, STR(box_number)+ ': ' + class AS box_class \
-        FROM ( \
-        SELECT DISTINCT lot, CASE WHEN container_object_id = 2000001 THEN 0 WHEN container_object_id IS NULL THEN 0 ELSE container_object_id END AS box_number, class \
-        FROM ZNGFinalTest.final_test3.tbl_samples \
-        WHERE lot NOT LIKE '1%' AND lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' AND (container_object_id <> 2000015) \
-        ) tbl000 \
-        WHERE box_number <> 0 \
-        ) tlb001 \
-        GROUP BY lot \
         ) \
-        SELECT tbl1.a_lot, tbl5.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl6.box_class \
-        FROM tbl1 \
+        SELECT tbl1.a_lot, tbl5.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame \
+        FROM tbl1  \
         LEFT JOIN tbl2 \
         ON tbl2.lot = tbl1.a_lot \
-        LEFT JOIN tbl3 \
-        ON tbl3.lot = tbl1.a_lot \
         LEFT JOIN tbl4 \
         ON tbl4.lot = tbl1.a_lot \
         LEFT JOIN tbl5 \
         ON tbl5.lot = tbl1.a_lot \
-        LEFT JOIN tbl6 \
-        ON tbl5.lot =tbl6.lot \
         ORDER BY a_lot DESC"
 
         df = pd.read_sql(query, conn)
-        df = df[df['final_test_yield'] > 0]
-        df['final_test_yield'].fillna(0, inplace=True)
-        df['year'] =  df['delivery_date'].dt.year
-        df['month'] = df['delivery_date'].dt.month
-        df['week'] = df['delivery_date'].dt.week
-        df['day'] = df['delivery_date'].dt.day
+        df = df[df['final_test_yield'].notnull()]
 
-        df.to_csv("initial_lot.txt",index=False)
+        # df.to_csv("initial_lot.txt",index=False)
 
-        df['create_date'] = df['create_date'].astype(str)
-        df['create_date'] = df['create_date'].str.split('\s+').str[0]
-        df['create_user'] = df['create_user'].str.split('-').str[0].str.capitalize()
-        df['create_date'].replace({'NaT': ' '}, inplace=True)
+        # df['create_date'] = df['create_date'].astype(str)
+        # df['create_date'] = df['create_date'].str.split('\s+').str[0]
+        # df['create_user'] = df['create_user'].str.split('-').str[0].str.capitalize()
+        # df['create_date'].replace({'NaT': ' '}, inplace=True)
 
         #cleaing for workplace, operator and tester
         df['workplace'].fillna('; ', inplace=True)
@@ -488,19 +524,18 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         df['tester'].fillna('; ', inplace=True)
         df['tester'] = df['tester'].apply(lambda s: ', '.join(set(s.split('; '))))
 
-        df['comment'].fillna('<p>', inplace=True)
-        df['comment'] = df['comment'].map(strip_tags)
+        # df['comment'].fillna('<p>', inplace=True)
+        # df['comment'] = df['comment'].map(strip_tags)
 
         # fill Nan value
         df['transistor_type'].fillna("-", inplace=True)
         df['ship_package'].fillna("-", inplace=True)
-        df['lead_frame'].fillna("-", inplace=True)
-        df['box_class'].fillna("-", inplace=True)
+        # df['lead_frame'].fillna("-", inplace=True)
+        # df['box_class'].fillna("-", inplace=True)
 
         # for total rejection
         df['rejected'] = df['final_test_para_fails'] + df['final_test_gross_fails']
-
-        df['rejected_perc'] = round(100*(df['final_test_gross_fails'])/(df['final_test_output'] + df['rejected']), 2)
+        df['rejected_perc'] = round(100*(df['rejected'])/(df['final_test_output'] + df['rejected']), 2)
         # GW percentage
         df['gw_perc'] = round(100*(df['final_test_para_fails'])/(df['final_test_output'] + df['rejected']), 2)
 
@@ -510,26 +545,26 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         # remove old data not delivered or with missing data
         df = df[(df['a_lot'] != '446609') & (df['a_lot'] != '450934') & (df['a_lot'] != '456671') & (df['a_lot'] != '462456') & (df['a_lot'] != '464058')& (df['a_lot'] != '464058')& (df['a_lot'] != '478010')& (df['a_lot'] != '479189')& (df['a_lot'] != '511654')& (df['a_lot'] != '569602')&  (df['a_lot'] != '574134')]
 
+        # fill empty cells in wafer info
+        df['wafer_info'].fillna("Unbekannt", inplace=True)
+
         table_columns=[
                         {'name': 'Charge', 'id': 'a_lot'},
-                        {'name': 'LS Nummer', 'id': 'ba'},
+                        {'name': 'LS #', 'id': 'ba'},
                         {'name': 'Typ', 'id': 'device'},
                         {'name': 'Package', 'id': 'package'},
                         {'name': 'Group', 'id': 'device_group'},
                         {'name': 'Transistor', 'id': 'transistor_type'},
                         {'name': 'GW', 'id': 'final_test_para_fails'},
-                        {'name': 'GW (%)', 'id': 'gw_perc'},
                         {'name': 'TA', 'id': 'final_test_gross_fails'},
-                        {'name': 'TA (%)', 'id': 'ta_perc'},
                         {'name': 'Reject', 'id': 'rejected'},
                         {'name': 'Output', 'id': 'final_test_output'},
-                        {'name': 'Auebeute', 'id': 'final_test_yield'},
-                        {'name': 'Q-ID', 'id': 'quality_id'},
+                        {'name': 'GW (%)', 'id': 'gw_perc'},
+                        {'name': 'TA (%)', 'id': 'ta_perc'},
+                        {'name': 'Reject (%)', 'id': 'rejected_perc'},
+                        {'name': 'Ausbeute (%)', 'id': 'final_test_yield'},
                         {'name': 'LieferD.', 'id': 'delivery_date'},
-                        {'name': 'Ursache', 'id': 'cause_ex'},
-                        {'name': 'Editer', 'id': 'edit_user'},
-                        {'name': 'Editdatum', 'id': 'edit_date'},
-                        {'name': 'Wafer (Menge(probed/unprobed))', 'id': 'wafer_info'},
+                        {'name': 'Wafer: Menge(probed/unprobed))', 'id': 'wafer_info'},
                         {'name': 'Gurt', 'id': 'ship_package'},
                         {'name': 'Maschine N.', 'id': 'workplace'},
                         {'name': 'Tester', 'id': 'tester'},
@@ -545,16 +580,6 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
         WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (package <> 'SEN') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
         ), \
-        tbl2 AS ( \
-        SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-        FROM \
-        ( \
-        SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-        FROM ZNGProduction.catuno.tbl_wafers \
-        WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-        ) tbl0 \
-        GROUP BY lot \
-        ), \
         tbl3 AS ( \
         SELECT ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
         FROM ZNGFinalTest.quality.vw_last_comments \
@@ -563,76 +588,32 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
         ), \
-        tbl4 AS ( \
-        SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-        FROM ZNGFinalTest.final_test3.tbl_summaries \
-        GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
-        ), \
         tbl5 AS ( \
         SELECT lot, STRING_AGG(CAST(ba AS NVARCHAR(MAX)), ', ') AS ba \
         FROM ZNGProduction.catuno.tbl_lots \
         GROUP BY lot \
-        ), \
-        tbl6 AS ( \
-        SELECT lot, STRING_AGG(CAST(box_class AS NVARCHAR(MAX)), '; ') AS box_class \
-        FROM ( \
-        SELECT lot, STR(box_number)+ ': ' + class AS box_class \
-        FROM ( \
-        SELECT DISTINCT lot, CASE WHEN container_object_id = 2000001 THEN 0 WHEN container_object_id IS NULL THEN 0 ELSE container_object_id END AS box_number, class \
-        FROM ZNGFinalTest.final_test3.tbl_samples \
-        WHERE lot NOT LIKE '1%' AND lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' AND (container_object_id <> 2000015) \
-        ) tbl000 \
-        WHERE box_number <> 0 \
-        ) tlb001 \
-        GROUP BY lot \
         ) \
-        SELECT tbl1.a_lot, tbl5.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl6.box_class \
+        SELECT tbl1.a_lot, tbl5.ba, tbl1.device, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
         FROM tbl1 \
-        LEFT JOIN tbl2 \
-        ON tbl2.lot = tbl1.a_lot \
         LEFT JOIN tbl3 \
         ON tbl3.lot = tbl1.a_lot \
-        LEFT JOIN tbl4 \
-        ON tbl4.lot = tbl1.a_lot \
         LEFT JOIN tbl5 \
         ON tbl5.lot = tbl1.a_lot \
-        LEFT JOIN tbl6 \
-        ON tbl5.lot =tbl6.lot \
         ORDER BY a_lot DESC"
 
         df = pd.read_sql(query, conn)
-        df = df[df['final_test_yield'] > 0]
-        df['final_test_yield'].fillna(0, inplace=True)
-        df['year'] =  df['delivery_date'].dt.year
-        df['month'] = df['delivery_date'].dt.month
-        df['week'] = df['delivery_date'].dt.week
-        df['day'] = df['delivery_date'].dt.day
+        df = df[df['final_test_yield'].notnull()]
         df['create_date'] = df['create_date'].astype(str)
         df['create_date'] = df['create_date'].str.split('\s+').str[0]
         df['create_user'] = df['create_user'].str.split('-').str[0].str.capitalize()
         df['create_date'].replace({'NaT': ' '}, inplace=True)
 
-        #cleaing for workplace, operator and tester
-        df['workplace'].fillna('; ', inplace=True)
-        df['workplace'] = df['workplace'].apply(lambda s: ', '.join(set(s.split('; '))))
-        df['operator'].fillna('; ', inplace=True)
-        df['operator'] = df['operator'].apply(lambda s: ', '.join(set(s.split('; '))))
-        df['tester'].fillna('; ', inplace=True)
-        df['tester'] = df['tester'].apply(lambda s: ', '.join(set(s.split('; '))))
-
         df['comment'].fillna('<p>', inplace=True)
         df['comment'] = df['comment'].map(strip_tags)
 
-        # fill Nan value
-        df['transistor_type'].fillna("-", inplace=True)
-        df['ship_package'].fillna("-", inplace=True)
-        df['lead_frame'].fillna("-", inplace=True)
-        df['box_class'].fillna("-", inplace=True)
-
         # for total rejection
         df['rejected'] = df['final_test_para_fails'] + df['final_test_gross_fails']
-
-        df['rejected_perc'] = round(100*(df['final_test_gross_fails'])/(df['final_test_output'] + df['rejected']), 2)
+        df['rejected_perc'] = round(100*(df['rejected'])/(df['final_test_output'] + df['rejected']), 2)
         # GW percentage
         df['gw_perc'] = round(100*(df['final_test_para_fails'])/(df['final_test_output'] + df['rejected']), 2)
 
@@ -644,22 +625,21 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
 
         table_columns=[
                         {'name': 'Charge', 'id': 'a_lot'},
-                        {'name': 'LS Nummer', 'id': 'ba'},
+                        {'name': 'LS #', 'id': 'ba'},
                         {'name': 'Typ', 'id': 'device'},
                         {'name': 'Package', 'id': 'package'},
                         {'name': 'Group', 'id': 'device_group'},
                         {'name': 'GW', 'id': 'final_test_para_fails'},
-                        {'name': 'GW (%)', 'id': 'gw_perc'},
                         {'name': 'TA', 'id': 'final_test_gross_fails'},
-                        {'name': 'TA (%)', 'id': 'ta_perc'},
                         {'name': 'Reject', 'id': 'rejected'},
                         {'name': 'Output', 'id': 'final_test_output'},
-                        {'name': 'Auebeute', 'id': 'final_test_yield'},
+                        {'name': 'Ausbeute (%)', 'id': 'final_test_yield'},
                         {'name': 'Q-ID', 'id': 'quality_id'},
                         {'name': 'LieferD.', 'id': 'delivery_date'},
                         {'name': 'WPS', 'id': 'wps'},
                         {'name': 'FA', 'id': 'fa'},
-                        {'name': 'Ursache', 'id': 'cause_ex'},
+                        {'name': 'Class', 'id': 'class_name'},
+                        {'name': 'Ursache', 'id': 'cause'},
                         {'name': 'Ersteller', 'id': 'create_user'},
                         {'name': 'Erstellungsdatum', 'id': 'create_date'},
                         {'name': 'Editer', 'id': 'edit_user'},
@@ -676,16 +656,6 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
         WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (package <> 'SEN') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
         ), \
-        tbl2 AS ( \
-        SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-        FROM \
-        ( \
-        SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-        FROM ZNGProduction.catuno.tbl_wafers \
-        WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-        ) tbl0 \
-        GROUP BY lot \
-        ), \
         tbl3 AS ( \
         SELECT ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
         FROM ZNGFinalTest.quality.vw_last_comments \
@@ -693,11 +663,6 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ), \
-        tbl4 AS ( \
-        SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-        FROM ZNGFinalTest.final_test3.tbl_summaries \
-        GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
         ), \
         tbl5 AS ( \
         SELECT lot, STRING_AGG(CAST(ba AS NVARCHAR(MAX)), ', ') AS ba \
@@ -717,14 +682,10 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ) tlb001 \
         GROUP BY lot \
         ) \
-        SELECT tbl1.a_lot, tbl5.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl6.box_class \
+        SELECT tbl1.a_lot, tbl5.ba, tbl1.device, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl6.box_class \
         FROM tbl1 \
-        LEFT JOIN tbl2 \
-        ON tbl2.lot = tbl1.a_lot \
         LEFT JOIN tbl3 \
         ON tbl3.lot = tbl1.a_lot \
-        LEFT JOIN tbl4 \
-        ON tbl4.lot = tbl1.a_lot \
         LEFT JOIN tbl5 \
         ON tbl5.lot = tbl1.a_lot \
         LEFT JOIN tbl6 \
@@ -732,38 +693,23 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ORDER BY a_lot DESC"
 
         df = pd.read_sql(query, conn)
-        df = df[df['final_test_yield'] > 0]
-        df['final_test_yield'].fillna(0, inplace=True)
-        df['year'] =  df['delivery_date'].dt.year
-        df['month'] = df['delivery_date'].dt.month
-        df['week'] = df['delivery_date'].dt.week
-        df['day'] = df['delivery_date'].dt.day
+        df = df[df['final_test_yield'].notnull()]
+
         df['create_date'] = df['create_date'].astype(str)
         df['create_date'] = df['create_date'].str.split('\s+').str[0]
         df['create_user'] = df['create_user'].str.split('-').str[0].str.capitalize()
         df['create_date'].replace({'NaT': ' '}, inplace=True)
 
-        #cleaing for workplace, operator and tester
-        df['workplace'].fillna('; ', inplace=True)
-        df['workplace'] = df['workplace'].apply(lambda s: ', '.join(set(s.split('; '))))
-        df['operator'].fillna('; ', inplace=True)
-        df['operator'] = df['operator'].apply(lambda s: ', '.join(set(s.split('; '))))
-        df['tester'].fillna('; ', inplace=True)
-        df['tester'] = df['tester'].apply(lambda s: ', '.join(set(s.split('; '))))
 
         df['comment'].fillna('<p>', inplace=True)
         df['comment'] = df['comment'].map(strip_tags)
 
         # fill Nan value
-        df['transistor_type'].fillna("-", inplace=True)
-        df['ship_package'].fillna("-", inplace=True)
-        df['lead_frame'].fillna("-", inplace=True)
         df['box_class'].fillna("-", inplace=True)
 
         # for total rejection
         df['rejected'] = df['final_test_para_fails'] + df['final_test_gross_fails']
-
-        df['rejected_perc'] = round(100*(df['final_test_gross_fails'])/(df['final_test_output'] + df['rejected']), 2)
+        df['rejected_perc'] = round(100*(df['rejected'])/(df['final_test_output'] + df['rejected']), 2)
         # GW percentage
         df['gw_perc'] = round(100*(df['final_test_para_fails'])/(df['final_test_output'] + df['rejected']), 2)
 
@@ -774,13 +720,13 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         df = df[(df['a_lot'] != '446609') & (df['a_lot'] != '450934') & (df['a_lot'] != '456671') & (df['a_lot'] != '462456') & (df['a_lot'] != '464058')& (df['a_lot'] != '464058')& (df['a_lot'] != '478010')& (df['a_lot'] != '479189')& (df['a_lot'] != '511654')& (df['a_lot'] != '569602')&  (df['a_lot'] != '574134')]
 
         table_columns=[{'name': 'Charge', 'id': 'a_lot'},
-                        {'name': 'LS Nummer', 'id': 'ba'},
+                        {'name': 'LS #', 'id': 'ba'},
                         {'name': 'Typ', 'id': 'device'},
                         {'name': 'Package', 'id': 'package'},
                         {'name': 'Group', 'id': 'device_group'},
                         {'name': 'Reject', 'id': 'rejected'},
                         {'name': 'Output', 'id': 'final_test_output'},
-                        {'name': 'Auebeute', 'id': 'final_test_yield'},
+                        {'name': 'Ausbeute (%)', 'id': 'final_test_yield'},
                         {'name': 'Gurt', 'id': 'ship_package'},
                         {'name': 'Q-ID', 'id': 'quality_id'},
                         {'name': 'LieferD.', 'id': 'delivery_date'},
@@ -794,17 +740,7 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
         LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
         ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-        WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (package <> 'SEN') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-        ), \
-        tbl2 AS ( \
-        SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-        FROM \
-        ( \
-        SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-        FROM ZNGProduction.catuno.tbl_wafers \
-        WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-        ) tbl0 \
-        GROUP BY lot \
+        WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') AND (package <> 'SEN') \
         ), \
         tbl3 AS ( \
         SELECT ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
@@ -814,24 +750,24 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
         ) \
-        SELECT tbl1.a_lot, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment, REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
+        SELECT tbl1.a_lot, tbl1.device, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, tbl3.cause, tbl3.comment, REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date \
         FROM tbl1 \
-        LEFT JOIN tbl2  \
-        ON tbl2.lot = tbl1.a_lot \
         LEFT JOIN tbl3 \
-        ON tbl3.lot = tbl1.a_lot \
+        ON tbl3.lot = tbl1.a_lot\
         ORDER BY a_lot DESC"
 
         df = pd.read_sql(query, conn)
-        df = df[df['final_test_yield'] > 0]
-        df['final_test_yield'].fillna(0, inplace=True)
-        df['year'] =  df['delivery_date'].dt.year
-        df['month'] = df['delivery_date'].dt.month
-        df['week'] = df['delivery_date'].dt.week
-        df['day'] = df['delivery_date'].dt.day
+        df = df[df['final_test_yield'].notnull()]
 
         # for total rejection
         df['rejected'] = df['final_test_para_fails'] + df['final_test_gross_fails']
+        df['rejected_perc'] = round(100*(df['rejected'])/(df['final_test_output'] + df['rejected']), 2)
+        # GW percentage
+        df['gw_perc'] = round(100*(df['final_test_para_fails'])/(df['final_test_output'] + df['rejected']), 2)
+
+        # TA percentage
+        df['ta_perc'] = round(100*(df['final_test_gross_fails'])/(df['final_test_output'] + df['rejected']), 2)
+
 
         # remove old data not delivered or with missing data
         df = df[(df['a_lot'] != '446609') & (df['a_lot'] != '450934') & (df['a_lot'] != '456671') & (df['a_lot'] != '462456') & (df['a_lot'] != '464058')& (df['a_lot'] != '464058')& (df['a_lot'] != '478010')& (df['a_lot'] != '479189')& (df['a_lot'] != '511654')& (df['a_lot'] != '569602')&  (df['a_lot'] != '574134')]
@@ -844,10 +780,10 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
                         {'name': 'Group', 'id': 'device_group'},
                         {'name': 'Reject', 'id': 'rejected'},
                         {'name': 'Output', 'id': 'final_test_output'},
-                        {'name': 'Auebeute', 'id': 'final_test_yield'},
+                        {'name': 'Ausbeute', 'id': 'final_test_yield'},
                         {'name': 'LieferD.', 'id': 'delivery_date'},
                         {'name': 'Q-ID', 'id': 'quality_id'},
-                        {'name': 'Ursache', 'id': 'cause_ex'},
+                        {'name': 'Class', 'id': 'class_name'},
                         {'name': 'Editer', 'id': 'edit_user'},
                         {'name': 'Editdatum', 'id': 'edit_date'}]
     else:
@@ -878,7 +814,7 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         JOIN ZNGFinalTest.quality.tbl_classes \
         ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
         ) \
-        SELECT tbl1.a_lot, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment, REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END + '// '+ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', ''), '<font color=black>',''), '</font>', ''), '<br>', '') AS cause_ex, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
+        SELECT tbl1.a_lot, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl1.ship_package, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, tbl3.comment, REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date \
         FROM tbl1 \
         LEFT JOIN tbl2  \
         ON tbl2.lot = tbl1.a_lot \
@@ -892,49 +828,109 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
         df['year'] = datetime.today().year
 
         # for total rejection
-        df['rejected'] = df['final_test_para_fails'] + df['final_test_gross_fails']
+        df['rejected'] = df['a_lot']
+        df['rejected_perc'] = df['a_lot']
+        # # GW percentage
+        df['gw_perc'] = df['a_lot']
 
+        # TA percentage
+        df['ta_perc'] = df['a_lot']
+
+        # fill empty cells in wafer info
+        df['wafer_info'].fillna("Unbekannt", inplace=True)
         table_columns=[
                         {'name': 'Charge', 'id': 'a_lot'},
                         {'name': 'Typ', 'id': 'device'},
                         {'name': 'Package', 'id': 'package'},
                         {'name': 'Group', 'id': 'device_group'},
                         {'name': 'Q-ID', 'id': 'quality_id'},
-                        {'name': 'Ursache', 'id': 'cause_ex'},
+                        {'name': 'Class', 'id': 'class_name'},
+                        {'name': 'Ursache', 'id': 'cause'},
                         {'name': 'Editer', 'id': 'edit_user'},
                         {'name': 'Editdatum', 'id': 'edit_date'},
-                        {'name': 'Waferinformation', 'id': 'wafer_info'}
+                        {'name': 'Wafer: Menge(probed/unprobed))', 'id': 'wafer_info'}
                         ]
 
-    # fill empty cells in wafer info
-    df['wafer_info'].fillna("Unbekannt", inplace=True)
+    # date-picker data
+    start_date, end_date = dt.strptime(re.split('T| ', start_date)[0], '%Y-%m-%d'), dt.strptime(re.split('T| ', end_date)[0], '%Y-%m-%d')
 
-    # color scale data sorting
-    df['color_scale'] = df.apply(color_scale, axis=1)
+    # date filtering by datepicker
+    filtered_data = df[(df['delivery_date'] >= start_date) & (df['delivery_date'] <= end_date) | (df['delivery_date'].isnull())]
 
     # NaN or NaT data sorting
-    df['delivery_date'] = df['delivery_date'].astype(str)
-    df['delivery_date'].replace({'NaT': 'Vor Auslieferung'}, inplace=True)
+    filtered_data['delivery_date'] = filtered_data['delivery_date'].astype(str)
+    filtered_data['delivery_date'].replace({'NaT': 'Vor Auslieferung'}, inplace=True)
     # df['delivery_date'].fillna('Not_yet_delivered x', inplace=True)
     # df['day'].fillna('Not_delivered', inplace=True)
-    df['month'].fillna(datetime.today().month, inplace=True)
-    df['year'].fillna(datetime.today().year, inplace=True)
-
-    # Q date sorting
-    df['edit_date'] = df['edit_date'].astype(str)
-    df['edit_date'] = df['edit_date'].str.split('\s+').str[0]
-    df['edit_date'].replace({'NaT': ' '}, inplace=True)
-    df['edit_user'] = df['edit_user'].str.split('-').str[0].str.capitalize()
-
-    # replace wps boolean
-    booleanDictionary = {True: 'O', False: 'X'}
-
-    #loop by df is loop by columns, same as for column in booleandf.columns:
-    for column in df[['wps', 'fa']]:
-        df[column] = df[column].map(booleanDictionary)
+    # df['month'].fillna(datetime.today().month, inplace=True)
+    # df['year'].fillna(datetime.today().year, inplace=True)
 
     # data filtering by options - buttons
-    filtered_data = df[(df['year'] == year_update) & month_filter(df, month_update) & (package_filter(df, package_update)) & (wire_filter(df, wire_update)) & (device_group_update(df, device_g_update))]
+    filtered_data = filtered_data[(package_filter(filtered_data, package_update)) & (wire_filter(filtered_data, wire_update)) & (device_group_update(filtered_data, device_g_update))]
+
+    # filter for edit date and wps,fa <- because of the change made after writing this code so this filter was added in order to fitler them later.
+    if what_data == 'wafer':
+        pass
+    elif what_data == 'comment':
+        # Q date sorting
+        filtered_data['edit_date'] = filtered_data['edit_date'].astype(str)
+        filtered_data['edit_date'] = filtered_data['edit_date'].str.split('\s+').str[0]
+        filtered_data['edit_date'].replace({'NaT': ' '}, inplace=True)
+        filtered_data['edit_user'] = filtered_data['edit_user'].str.split('-').str[0].str.capitalize()
+
+        #################### wps and fa data type change ####################
+        # replace wps boolean
+        booleanDictionary = {True: 'O', False: 'X'}
+
+        #loop by df is loop by columns, same as for column in booleandf.columns:
+        for column in filtered_data[['wps', 'fa']]:
+            filtered_data[column] = filtered_data[column].map(booleanDictionary)
+        #####################################################################
+    elif what_data == 'storage':
+        # Q date sorting
+        filtered_data['edit_date'] = filtered_data['edit_date'].astype(str)
+        filtered_data['edit_date'] = filtered_data['edit_date'].str.split('\s+').str[0]
+        filtered_data['edit_date'].replace({'NaT': ' '}, inplace=True)
+        filtered_data['edit_user'] = filtered_data['edit_user'].str.split('-').str[0].str.capitalize()
+
+        #################### wps and fa data type change ####################
+        # replace wps boolean
+        booleanDictionary = {True: 'O', False: 'X'}
+
+        #loop by df is loop by columns, same as for column in booleandf.columns:
+        for column in filtered_data[['wps', 'fa']]:
+            filtered_data[column] = filtered_data[column].map(booleanDictionary)
+        #####################################################################
+    elif what_data == 'short':
+        # Q date sorting
+        filtered_data['edit_date'] = filtered_data['edit_date'].astype(str)
+        filtered_data['edit_date'] = filtered_data['edit_date'].str.split('\s+').str[0]
+        filtered_data['edit_date'].replace({'NaT': ' '}, inplace=True)
+        filtered_data['edit_user'] = filtered_data['edit_user'].str.split('-').str[0].str.capitalize()
+
+        #################### wps and fa data type change ####################
+        # replace wps boolean
+        booleanDictionary = {True: 'O', False: 'X'}
+
+        #loop by df is loop by columns, same as for column in booleandf.columns:
+        for column in filtered_data[['wps', 'fa']]:
+            filtered_data[column] = filtered_data[column].map(booleanDictionary)
+        #####################################################################
+    else:
+        # Q date sorting
+        filtered_data['edit_date'] = filtered_data['edit_date'].astype(str)
+        filtered_data['edit_date'] = filtered_data['edit_date'].str.split('\s+').str[0]
+        filtered_data['edit_date'].replace({'NaT': ' '}, inplace=True)
+        filtered_data['edit_user'] = filtered_data['edit_user'].str.split('-').str[0].str.capitalize()
+
+        #################### wps and fa data type change ####################
+        # replace wps boolean
+        booleanDictionary = {True: 'O', False: 'X'}
+
+        #loop by df is loop by columns, same as for column in booleandf.columns:
+        for column in filtered_data[['wps', 'fa']]:
+            filtered_data[column] = filtered_data[column].map(booleanDictionary)
+        #####################################################################
 
     # turn into percentage
     filtered_data['final_test_yield'] = round(100*filtered_data['final_test_yield'],2)
@@ -942,6 +938,8 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
     # combine device with wire
     filtered_data['device'] = filtered_data['device'] + '-'+ filtered_data['bond_wire']
 
+
+    ############### table filter ####################
     # filtering for datatable
     filtering_expressions = filter.split(' && ')
 
@@ -972,10 +970,19 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
 
     # pagination
     page_count = math.ceil(len(filtered_data['a_lot'])/page_size)
+    ##################################################
 
-    return dff.iloc[
-        page_current*page_size: (page_current + 1)*page_size
-    ].to_dict('records'), table_columns, page_count
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("           DASHBOARD (INFO)    ")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+    print("###############################")
+
+    return dff.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'), table_columns, page_count
 
 @app.callback(
         [Output('app3-graph-1', 'figure'),
@@ -986,23 +993,48 @@ def update_table_lot(n_clicks, page_current, page_size, sort_by, filter, what_da
 
 def FT_summary(rows, derived_virtual_data, max_rows=300):
     # extract lot number
-    dff = pd.DataFrame.from_dict({'a_lot':[1,2,3], 'aaa': [4,5,6]}) if rows is None else pd.DataFrame(rows)
+    if len(derived_virtual_data) == 0:
+        selected_lot_number = pd.DataFrame(rows).iloc[0]['a_lot']
+    else:
+        dff2 = pd.DataFrame.from_dict({'a_lot':[1,2,3], 'aaa': [4,5,6]}) if rows is None else pd.DataFrame(rows)
+        selected_lot_number = dff2.iloc[derived_virtual_data]['a_lot'].values[0]
+
     conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
                        user='WebServer',
                        password='W3bS3rv3r',
                        database='ZNGFinalTest')
 
-    query = "SELECT DISTINCT lot, sub_lot, field_lot, device, field_operator, CAST(bin_number as varchar(20)) + '-' + ISNULL(bin_name, 'Unbekannt') AS bin_ID, count, pass_fail \
+    query = "SELECT DISTINCT lot, sub_lot, field_lot, device, field_operator, ISNULL(bin_name, 'Unbekannt') + ' [' + CAST(bin_number as varchar(20)) + ']' AS bin_ID, count, pass_fail \
     FROM ZNGFinalTest.final_test3.tbl_summaries \
     FULL JOIN ZNGFinalTest.final_test3.tbl_summary_bins \
     ON ZNGFinalTest.final_test3.tbl_summaries.summary_id = ZNGFinalTest.final_test3.tbl_summary_bins.summary_id \
     WHERE (tape_reel = 0) AND (lot NOT LIKE 'Z%') AND (lot NOT LIKE '1%') AND (lot NOT LIKE '2%') AND (lot NOT LIKE '3%') AND (lot = '{}') \
-    ORDER BY lot DESC, sub_lot, bin_ID".format(dff.iloc[derived_virtual_data]['a_lot'].values[0])
+    ORDER BY lot DESC, sub_lot, bin_ID".format(selected_lot_number)
 
     df = pd.read_sql(query, conn)
 
     if len(df) == 0:
-        fig_1 = html.H4("Keine Summarydaten im SQLserver.")
+        # dummy graph if there's no data
+        fig_1 = go.Figure(
+                        data= [
+                        {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'B'},
+                        {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': 'A'}
+                        ],
+                        layout = go.Layout(
+                                    title = 'Keine Daten',
+                                    xaxis_tickangle=-90,
+                                    # titlefont=dict(color= 'black', size=21, family = 'inherit'),
+                                    # paper_bgcolor='white',
+                                    # plot_bgcolor= '#d6e5fa',
+                                    # autosize = False,
+                                    # width = 1500,
+                                    # height = 380,
+                                    hovermode = 'x',
+                                    # legend_orientation="h",
+                                    # legend=dict(x=0.1, y=1.0)
+                                        )
+                        )
+
     else:
         if df['pass_fail'].nunique() == 1:
             whole_lot_yield = df.groupby(['lot','bin_ID'])['count'].agg(count= sum)
@@ -1021,7 +1053,7 @@ def FT_summary(rows, derived_virtual_data, max_rows=300):
                                         showlegend=False
                                         )],
                             layout = go.Layout(
-                                        title = 'title',
+                                        title = 'Endmessung Statistik (Total)',
                                         xaxis_tickangle=-90,
                                         # titlefont=dict(color= 'black', size=21, family = 'inherit'),
                                         # paper_bgcolor='white',
@@ -1034,7 +1066,7 @@ def FT_summary(rows, derived_virtual_data, max_rows=300):
                                         # legend=dict(x=0.1, y=1.0)
                                             ))
 
-            fig_1.layout.yaxis.update(title = 'title-layout',
+            fig_1.layout.yaxis.update(title = 'Prozent',
                                     # titlefont=dict(color= 'black', size=16, family = 'inherit'),
                                     showgrid =True)
 
@@ -1055,7 +1087,7 @@ def FT_summary(rows, derived_virtual_data, max_rows=300):
                                         showlegend=False
                                         )],
                             layout = go.Layout(
-                                        title = 'title',
+                                        title = 'Endmessung Statistik (Total)',
                                         xaxis_tickangle=-90,
                                         # titlefont=dict(color= 'black', size=21, family = 'inherit'),
                                         # paper_bgcolor='white',
@@ -1068,7 +1100,7 @@ def FT_summary(rows, derived_virtual_data, max_rows=300):
                                         # legend=dict(x=0.1, y=1.0)
                                             ))
 
-            fig_1.layout.yaxis.update(title = 'title-layout',
+            fig_1.layout.yaxis.update(title = 'Prozent',
                                     # titlefont=dict(color= 'black', size=16, family = 'inherit'),
                                     showgrid =True)
 
@@ -1114,7 +1146,7 @@ def FT_summary(rows, derived_virtual_data, max_rows=300):
     FULL JOIN final_test3.tbl_summary_tests \
     ON final_test3.tbl_summary_tests.summary_id = final_test3.tbl_summaries.summary_id \
     WHERE (lot NOT LIKE 'Z%') AND (lot NOT LIKE '1%') AND (lot NOT LIKE '2%') AND (lot NOT LIKE '3%') AND (lot = '{}') \
-    ORDER BY field_lot, test_number".format(dff.iloc[derived_virtual_data]['a_lot'].values[0])
+    ORDER BY field_lot, test_number".format(selected_lot_number)
 
     df2 = pd.read_sql(query2, conn)
 
