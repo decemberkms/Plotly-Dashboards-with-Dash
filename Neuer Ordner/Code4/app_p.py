@@ -73,6 +73,41 @@ def split_filter_part(filter_part):
 PAGE_SIZE = 10
 
 
+def data_bars(df, column):
+    n_bins = 100
+    bounds = [i * (1.0 / n_bins) for i in range(n_bins + 1)]
+    ranges = [
+        ((df[column].max() - df[column].min()) * i) + df[column].min()
+        for i in bounds
+    ]
+    styles = []
+    for i in range(1, len(bounds)):
+        min_bound = ranges[i - 1]
+        max_bound = ranges[i]
+        max_bound_percentage = bounds[i] * 100
+        styles.append({
+            'if': {
+                'filter_query': (
+                    '{{{column}}} >= {min_bound}' +
+                    (' && {{{column}}} < {max_bound}' if (i < len(bounds) - 1) else '')
+                ).format(column=column, min_bound=min_bound, max_bound=max_bound),
+                'column_id': column
+            },
+            'background': (
+                """
+                    linear-gradient(90deg,
+                    #0074D9 0%,
+                    #0074D9 {max_bound_percentage}%,
+                    white {max_bound_percentage}%,
+                    white 100%)
+                """.format(max_bound_percentage=max_bound_percentage)
+            ),
+            'paddingBottom': 2,
+            'paddingTop': 2
+        })
+
+    return styles
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div(id = 'body-container' ,children=[
@@ -190,6 +225,7 @@ app.layout = html.Div(id = 'body-container' ,children=[
             Output('bar-chart', 'figure'),
             Output('box-plot', 'figure'),
             Output('pdata-table','data'),
+            Output('pdata-table','style_data_conditional'),
             # Output('pdata-table','columns'),
             Output('pdata-table', 'page_count')],
             [Input('lot-slider', 'value'),
@@ -327,7 +363,22 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
 
     box_df = chart_df[chart_df['progress2_comment_2'] == 'Erledigt']
 
-    data_box = [go.Box(y=box_df[box_df['current_step'] == step]['duration'], name= step, boxpoints='all') for step in ['SÄGEN', 'BONDEN', 'BESCHN.OBERER PERF.RAND', 'VERPLASTEN', 'DICHTSTEG AUSSCHNEIDEN','DEFLASHEN',\
+    ##### box plot text info
+    hover_text = []
+    for index, row in box_df.iterrows():
+        hover_text.append(('Lot: {}<br>'+
+                          'Product: {}<br>'+
+                          'Qulity ID: {}<br>' +
+                          'Time taken: {} day(s)'
+                          ).format(row['a_lot'],
+                                    row['device'],
+                                    row['quality_id'],
+                                    row['duration']
+                                    ))
+
+    box_df['text'] = hover_text
+
+    data_box = [go.Box(y=box_df[box_df['current_step'] == step]['duration'], text=box_df[box_df['current_step'] == step]['text'], name= step, boxpoints='all') for step in ['SÄGEN', 'BONDEN', 'BESCHN.OBERER PERF.RAND', 'VERPLASTEN', 'DICHTSTEG AUSSCHNEIDEN','DEFLASHEN',\
     'AUSGANGSKONTROLLE VZ','VERZINNEN','QC NACH AF','VEREINZELN', 'WASCHEN/KONTROLLE', \
     'ENDMESSEN', 'LASERCODIEREN','GURTEN', 'QC', 'AUSLIEFERN', 'MAGNETISIEREN']]
 
@@ -396,7 +447,7 @@ def update_output(lot_slider,page_current, page_size, sort_by, filter):
 
     return dash_dangerously_set_inner_html.DangerouslySetInnerHTML('<strong>{}</strong> lots'.format(lot_slider)), dash_dangerously_set_inner_html.DangerouslySetInnerHTML('<strong>{}</strong> lots (<strong>{}%</strong>) released <span id = "yield_span">avg. yield: <strong>{}</strong></span>'.format(released_lot_amount, released_percent, released_lot_total_yield)), \
     dash_dangerously_set_inner_html.DangerouslySetInnerHTML('Avg. Period : <strong>{}</strong> days <br><font color="orange"><strong>{}</strong></font> lots blocked or Q-issue <br> <font color="blue"><strong>{}</strong></font> lots before start'.format(duration_for_production, problem_lots, ready_lots)), \
-    fig_pie, fig_bar, fig_box, table_data.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'), page_count
+    fig_pie, fig_bar, fig_box, table_data.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'), data_bars(table_data, 'progress2'), page_count
 
 @app.callback(
     Output('p-s-data-table', "data"),
