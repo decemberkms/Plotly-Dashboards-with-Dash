@@ -1,0 +1,52 @@
+Typ,Lot,Waferinformation,Betroffen,Ausfallursache,Startdatum,Status,Statusdatum
+<strong>ZHT431F01TA-AU</strong><br><br>Q-ID: <strong>      1152</strong><br>FA: O \ WPS: X,604842;,"9Z24ANNAL.5: <br>2(unprobed)<br>, 9Z28COOPS.6: <br>1(ringprobed)<br>",28 k / 60k ,Qualität allg. / Zuverlässigkeit: ,2020-07-23 09:34:33<br>Ingo Hoerselmann,"<div>Draht ragt aus Gehäuse heraus, Eintrag im Maschinenbuch Drahtklammer gewechselt</div>
+
+<div>FA: 7 BE aus TP2 geöffnet</div>
+
+<div>Loopfehler an GND-Draht, Wedge lose</div>
+
+<div>breitgedrückte Bondkugeln/golf clubs an V_in- &amp; V_ref-Bonds</div>
+
+<div>TP1 iO (&gt;99%), <font color=red>TP2: Verschrottungsprotokoll IHö</font></div>",2020-08-17 09:42:28<br>Felix Kannemann
+<strong>ZXMP10A13FTA-CU</strong><br><br>Q-ID: <strong>      1199</strong><br>FA: O \ WPS: X,610460;,9Z14GOFER.6: <br>7(probed)<br>,0 k / 134k ,Ausbeute: <div>Bondtoolabdruck</div>,2020-08-24 10:46:09<br>Martin Krausse,"<div>Kappenversatz Verplasten </div>
+
+<div>TP1-2,5 auf 608 dann auf 1023 (Kappenversatz kommt nicht in Schiene von 608)</div>
+
+<div>TP3 erhöhter TA</div>
+
+<div><font color=red>FA: Bondtoolabdrücke sowohl im Ausfall TP3 als auch TP1-2,5 </font></div>
+
+<div><font color=red>TP2 Ausgurten und bis Montag in TC: nach 6k NM abgebrochen 4xTA (auch Bondtoolabdrücke)</font></div>
+
+<div><font color=red>Verschrotten</font></div>",2020-08-31 15:07:37<br>Martin Krausse
+<strong>ZXMP4A16GQTA-AU</strong><br><br>Q-ID: <strong>      1201</strong><br>FA: X \ WPS: X,610483;,9Y47TOAST.4: <br>13(probed)<br>,32 k / 62k ,Prozessfehler: ,2020-08-25 09:40:11<br>Monty Krebs,"<div>TP 1/2 deformiertes Trägerband durch überspritzte BE</div>
+
+<div>Ausbeutecheck TP2</div>",2020-08-27 16:00:30<br>Martin Krausse
+<strong>FMMT491TA-79-AU</strong><br><br>Q-ID: <strong>      1209</strong><br>FA: X \ WPS: X,614504;,9Z29GROUP.4: <br>2(unprobed)<br>,12 k / 64k ,Prozessfehler: ,2020-08-28 10:44:23<br>Ingo Hoerselmann,"<div>TP1 Bondoffset, Probestück TP1 in Ordnung, Ende vom TTP1 nicht schön aber auch noch nicht kritisch </div>",2020-08-28 10:49:54<br>Ingo Hoerselmann
+<strong>ZTX1049ASTZ-AU</strong><br><br>Q-ID: <strong>      1211</strong><br>FA: O \ WPS: X,600622;,9Z27MOOSE.3: <br>8(unprobed)<br>,0 k / 71k ,"Ausbeute: <div>IEBO, ICBO</div>",2020-09-01 08:09:44<br>Minsung Kim,"<div>GW 1.19% (IEBO, ICBO) </div>
+
+<div>FA(FMW): Partikel</div>
+
+<div>~3k NM nach TC: 16xEB-Schlüsse, 9xReststöme, 4xEB-Schluss wieder gut nach mehrfachen messen: Ursache Partikel</div>
+
+<div><font color=red>Posten gesperrt (Wafercharge im Umlauf --&gt; Lot-ID: 614401)</font></div>",2020-09-03 16:05:39<br>Martin Krausse
+<strong>FZT1051ATA-CU</strong><br><br>Q-ID: <strong>      1224</strong><br>FA: O \ WPS: X,614601;,9Y43BRATS.6: <br>8(unprobed)<br>,0 k / 71k ,Ausbeute: ,2020-09-07 12:16:52<br>Martin Krausse,"<div>während NM GW/TA wurde GW--&gt; TA</div>
+
+<div>CE-Kurzschlüsse, ungeprobte Wafer</div>
+
+<div><font color=red>FA: Bondtoolabdrücke</font></div>
+
+<div>3k NM: keine Ausfälle</div>
+
+<div><font color=red>TP2 verschrotten</font> (Großteil der CE Kurzschlüsse)</div>",2020-09-08 15:19:02<br>Martin Krausse
+<strong>ZXCT1008FTA-AU</strong><br><br>Q-ID: <strong>      1225</strong><br>FA: X \ WPS: X,616207;,9Z39LICHI.2: <br>16(probed)<br>,0 k / 239k ,Qualität allg. / Zuverlässigkeit: ,2020-09-08 11:16:53<br>Felix Kannemann,"<div>TP2 6/24 Cratering meist Vsense+ aber auch andere Bondpads, Spur 2 (1.Drahtbonder) Linie 5</div>
+
+<div>TP4 6/20 Cratering</div>
+
+<div>nach TP4 Bondsettings geändert Spur 2: 15 -&gt; 13%US</div>",2020-09-08 11:23:04<br>Felix Kannemann
+<strong>ZXTN07045EFFTA-PD</strong><br><br>Q-ID: <strong>      1227</strong><br>FA: X \ WPS: X,612001;,"9Z35LOAMS.3: <br>3(probed)<br>, 9Z35LOAMS.5: <br>10(unprobed)<br>",0 k / 159k ,Q-Fehler: <div>HFE</div>,2020-09-09 08:50:52<br>Felix Kannemann,"<div>~60 QF: 2. HFE (Ic 1A) 1100...1180, Testprogramm Max 1000</div>
+
+<div>keine Obergrenze in Testspec (min 400)</div>
+
+<div>-&gt; Obergrenze in Testprogramm anpassen</div>",2020-09-09 08:53:57<br>Felix Kannemann
+<strong>FZT851TA-CU</strong><br><br>Q-ID: <strong>      1231</strong><br>FA: X \ WPS: X,618107;,"9Z39NOVEL.3: <br>2(probed)<br>, 9Z39NOVEL.4: <br>16(ringprobed)<br>, 9Z39NOVEL.5: <br>4(probed)<br>, 9Z39LOCKS.6: <br>9(unprobed)<br>, 9Z39LOCKS.4: <br>10(ringprobed)<br>",0 k / 201k ,Prozessfehler: ,2020-09-10 08:52:04<br>Ingo Hoerselmann,<div>TP5 Weichlotspritzer</div>,2020-09-10 08:52:31<br>Ingo Hoerselmann
