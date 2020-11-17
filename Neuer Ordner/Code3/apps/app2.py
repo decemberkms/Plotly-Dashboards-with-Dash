@@ -40,63 +40,6 @@ def package_list(df, package_):
     elif len(package_) == 7:
         return (df['package'] == package_[0]) | (df['package'] == package_[1]) | (df['package'] == package_[2]) | (df['package'] == package_[3]) | (df['package'] == package_[4]) | (df['package'] == package_[5]) | (df['package'] == package_[6])
 
-# query2 for plot
-def de_gr_list(df, device_group_):
-    if len(device_group_) == 1:
-        return (df['device_group'] == device_group_[0])
-    elif len(device_group_) == 2:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1])
-    elif len(device_group_) == 3:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2])
-    elif len(device_group_) == 4:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3])
-    elif len(device_group_) == 5:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4])
-    elif len(device_group_) == 6:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5])
-    elif len(device_group_) == 7:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6])
-    elif len(device_group_) == 8:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7])
-    elif len(device_group_) == 9:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])
-    elif len(device_group_) == 10:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9])
-    elif len(device_group_) == 11:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10])
-    elif len(device_group_) == 12:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11])
-    elif len(device_group_) == 13:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12])
-    elif len(device_group_) == 14:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13])
-    elif len(device_group_) == 15:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14])
-    elif len(device_group_) == 16:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[16])
-    elif len(device_group_) == 17:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16])
-    elif len(device_group_) == 18:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17])
-    elif len(device_group_) == 19:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18])
-    elif len(device_group_) == 20:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19])
-    elif len(device_group_) == 21:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20])
-    elif len(device_group_) == 22:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20]) | (df['device_group'] == device_group_[21])
-    elif len(device_group_) == 23:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20]) | (df['device_group'] == device_group_[21]) | (df['device_group'] == device_group_[22])
-    elif len(device_group_) == 24:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20]) | (df['device_group'] == device_group_[21]) | (df['device_group'] == device_group_[22]) | (df['device_group'] == device_group_[23])
-    elif len(device_group_) == 25:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20]) | (df['device_group'] == device_group_[21]) | (df['device_group'] == device_group_[22]) | (df['device_group'] == device_group_[23]) | (df['device_group'] == device_group_[24])
-    elif len(device_group_) == 26:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20]) | (df['device_group'] == device_group_[21]) | (df['device_group'] == device_group_[22]) | (df['device_group'] == device_group_[23]) | (df['device_group'] == device_group_[24]) | (df['device_group'] == device_group_[25])
-    elif len(device_group_) == 27:
-        return (df['device_group'] == device_group_[0]) | (df['device_group'] == device_group_[1]) | (df['device_group'] == device_group_[2]) | (df['device_group'] == device_group_[3]) | (df['device_group'] == device_group_[4]) | (df['device_group'] == device_group_[5]) | (df['device_group'] == device_group_[6]) | (df['device_group'] == device_group_[7]) | (df['device_group'] == device_group_[8])  | (df['device_group'] == device_group_[9]) | (df['device_group'] == device_group_[10]) | (df['device_group'] == device_group_[11]) | (df['device_group'] == device_group_[12]) | (df['device_group'] == device_group_[13]) | (df['device_group'] == device_group_[14]) | (df['device_group'] == device_group_[15]) | (df['device_group'] == device_group_[16]) | (df['device_group'] == device_group_[17]) | (df['device_group'] == device_group_[18]) | (df['device_group'] == device_group_[19]) | (df['device_group'] == device_group_[20]) | (df['device_group'] == device_group_[21]) | (df['device_group'] == device_group_[22]) | (df['device_group'] == device_group_[23]) | (df['device_group'] == device_group_[24]) | (df['device_group'] == device_group_[25]) | (df['device_group'] == device_group_[26])
-
 # difference
 def diff_call(n):
     if n == 2018.0:
@@ -119,8 +62,8 @@ def tick_mode(time_type):
         return 'auto'
 
 department_options = {
-    'NAT': ['SOT223', 'SOT23', 'LFSOT23', 'SOT23F', 'ELineX (Schüttgut)', 'ELineX (STZ)', 'SM8'],
-    'SEN': ['SEN']
+    'Site A': ['SOT223', 'SOT23', 'LFSOT23', 'SOT23F', 'ELineX (Schüttgut)', 'ELineX (STZ)', 'SM8'],
+    'Site B': ['SEN']
     }
 
 time_options = {
@@ -159,14 +102,14 @@ layout = html.Div(id = 'body-container', children =[
                     html.Div(className="content-container", children=[  # content-container start
                     html.H1(id = 'header1', className= 'app_title', children='Endmessungstatistik',
                                         style= {'text-align': 'center', 'font-family': 'Overpass'}),
-                    html.Div(children=[html.Label('Produkttyp'),
+                    html.Div(children=[html.Label('Location: '),
                             dcc.RadioItems(id='department-select',
                                             options = [
-                                                        {'label': 'NAT','value':'NAT'},
-                                                        {'label': 'Nicht NAT','value':'SEN'}
+                                                        {'label': 'Site A','value':'Site A'},
+                                                        {'label': 'Site B','value':'Site B'}
                                                         ],
                                             labelStyle={'display': 'inline-block', 'paddingLeft': '15px'},
-                                            value='NAT')],
+                                            value='Site A')],
                                     style={'width':'200px',  'display': 'inline-block', 'float':'left', 'paddingLeft': '30px'}),
                     html.Div([html.Label('Zeitraum'),
                             dcc.RadioItems(id='time-type',
@@ -176,7 +119,7 @@ layout = html.Div(id = 'body-container', children =[
                                                      {'label': 'Jährlich', 'value': 'year'}],
                                             labelStyle={'display': 'inline-block', 'paddingLeft': '15px'},
                                             value= 'week')],
-                                    style={'width':'450px',  'display': 'inline-block', 'float':'left', 'paddingLeft': '25px'}),
+                                    style={'width':'460px',  'display': 'inline-block', 'float':'left', 'paddingLeft': '15px'}),
                     html.Div([html.Label('Jahr'),
                             dcc.Dropdown(
                                 id='year-select',
@@ -288,28 +231,14 @@ def update_graph(time_type, dep_selected, package_selected, year_selected, chart
                            password='W3bS3rv3r',
                            database='ZNGFinalTest')
 
-    if dep_selected == 'NAT':
-        query = "SELECT lot AS a_lot, device, device_group, department, CASE WHEN package = 'ELineX' THEN package + ' ('+ ship_package + ')' ELSE package END as package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ship_package, die_size_code, transistor_type \
-        FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-        LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-        ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-        LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-        ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-        WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (package <> 'SEN') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') AND (final_test_yield >= 0) \
-        ORDER BY a_lot DESC"
-    elif dep_selected == 'SEN':
-        query = "SELECT lot AS a_lot, device, device_group, department, CASE WHEN package = 'ELineX' THEN package + ' ('+ ship_package + ')' ELSE package END as package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ship_package, die_size_code, transistor_type \
-        FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-        LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-        ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-        LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-        ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-        WHERE (package = 'SEN') AND (final_test_yield >= 0) \
-        ORDER BY a_lot DESC"
-
+    if dep_selected == 'Site A':
+        df_yield_app = pd.read_csv("graph1.txt")
+    elif dep_selected == 'Site B':
+        df_yield_app = pd.read_csv("graph2.txt")
+    df_yield_app['delivery_date'] = pd.to_datetime(df_yield_app['delivery_date'])
     # starting data for beginning
-    df_yield_app = pd.read_sql(query, conn)
-
+    # df_yield_app = pd.read_sql(query, conn)
+    # df_yield_app.to_csv("graph2.txt", index=False)
     df_yield_app['year'] =  df_yield_app['delivery_date'].dt.year
     df_yield_app['month'] = df_yield_app['delivery_date'].dt.month
     df_yield_app['week'] = df_yield_app['delivery_date'].dt.week
@@ -649,7 +578,7 @@ def update_graph(time_type, dep_selected, package_selected, year_selected, chart
                                  showgrid=False)
 
     # bar and pie plot
-    if dep_selected == 'NAT':
+    if dep_selected == 'Site A':
         if chart_selected == 'bar':
             # comparison of yield & output
             if time_type == 'quarter':
@@ -1457,7 +1386,7 @@ def update_graph(time_type, dep_selected, package_selected, year_selected, chart
                                             # autosize = True,
                                             # margin = dict(t=70, l=70, r=70, b=70)
                                             ))
-    elif dep_selected == 'SEN':
+    elif dep_selected == 'Site B':
         if chart_selected == 'bar':
             # comparison of yield & output
             if time_type == 'quarter':

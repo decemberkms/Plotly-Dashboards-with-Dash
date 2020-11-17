@@ -323,44 +323,7 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
                        database='ZNGFinalTest')
 
     if what_data2 == "short":
-        query = "WITH tbl1 AS ( \
-        SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
-        FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-        LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-        ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-        LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-        ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-        WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-        ), \
-        tbl2 AS ( \
-        SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-        FROM \
-        ( \
-        SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-        FROM ZNGProduction.catuno.tbl_wafers \
-        WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-        ) tbl0 \
-        GROUP BY lot \
-        ), \
-        tbl3 AS ( \
-        SELECT ZNGFinalTest.quality.vw_lots.release, ZNGFinalTest.quality.vw_lots.scrapped, ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
-        FROM ZNGFinalTest.quality.vw_last_comments \
-        JOIN ZNGFinalTest.quality.vw_lots \
-        ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
-        JOIN ZNGFinalTest.quality.tbl_classes \
-        ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ) \
-        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
-        FROM tbl1 \
-        LEFT JOIN tbl2 \
-        ON tbl2.lot = tbl1.a_lot \
-        LEFT JOIN tbl3 \
-        ON tbl3.lot = tbl1.a_lot \
-        WHERE quality_id <> 0 \
-        ORDER BY quality_id DESC"
-
-        df_a4 = pd.read_sql(query, conn)
-
+        df_a4 = pd.read_csv('a4_short.txt')
         # fill empty cells in wafer info
         df_a4['wafer_info'].fillna("Unbekannt", inplace=True)
 
@@ -448,44 +411,7 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
 
 
     elif what_data2 == "comment":
-        query = "WITH tbl1 AS ( \
-        SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
-        FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-        LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-        ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-        LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-        ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-        WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-        ), \
-        tbl2 AS ( \
-        SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-        FROM \
-        ( \
-        SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-        FROM ZNGProduction.catuno.tbl_wafers \
-        WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-        ) tbl0 \
-        GROUP BY lot \
-        ), \
-        tbl3 AS ( \
-        SELECT ZNGFinalTest.quality.vw_lots.release, ZNGFinalTest.quality.vw_lots.scrapped, ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
-        FROM ZNGFinalTest.quality.vw_last_comments \
-        JOIN ZNGFinalTest.quality.vw_lots \
-        ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
-        JOIN ZNGFinalTest.quality.tbl_classes \
-        ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ) \
-        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date \
-        FROM tbl1 \
-        LEFT JOIN tbl2 \
-        ON tbl2.lot = tbl1.a_lot \
-        LEFT JOIN tbl3 \
-        ON tbl3.lot = tbl1.a_lot \
-        WHERE quality_id <> 0 \
-        ORDER BY quality_id DESC"
-
-        df_a4 = pd.read_sql(query, conn)
-
+        df_a4 = pd.read_csv('a4_comment.txt')
         # fill empty cells in wafer info
         df_a4['wafer_info'].fillna("Unbekannt", inplace=True)
 
@@ -577,59 +503,7 @@ def render_content(what_data2, page_current, page_size, sort_by, filter):
 
         return df_a4.iloc[page_current*page_size: (page_current + 1)*page_size].to_dict('records'),columns_s, page_count
     elif what_data2 == "storage":
-        query = "WITH tbl1 AS ( \
-        SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
-        FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-        LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-        ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-        LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-        ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-        WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-        ), \
-        tbl2 AS ( \
-        SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-        FROM \
-        ( \
-        SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-        FROM ZNGProduction.catuno.tbl_wafers \
-        WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-        ) tbl0 \
-        GROUP BY lot \
-        ), \
-        tbl3 AS ( \
-        SELECT ZNGFinalTest.quality.vw_lots.release, ZNGFinalTest.quality.vw_lots.scrapped, ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
-        FROM ZNGFinalTest.quality.vw_last_comments \
-        JOIN ZNGFinalTest.quality.vw_lots \
-        ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
-        JOIN ZNGFinalTest.quality.tbl_classes \
-        ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-        ), \
-        tbl5 AS ( \
-        SELECT lot, STRING_AGG(CAST(box_class AS NVARCHAR(MAX)), '; ') AS box_class \
-        FROM ( \
-        SELECT lot, STR(box_number)+ ': ' + class AS box_class \
-        FROM ( \
-        SELECT DISTINCT lot, CASE WHEN container_object_id = 2000001 THEN 0 WHEN container_object_id IS NULL THEN 0 ELSE container_object_id END AS box_number, class \
-        FROM ZNGFinalTest.final_test3.tbl_samples \
-        WHERE lot NOT LIKE '1%' AND lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' AND (container_object_id <> 2000015) \
-        ) tbl000 \
-        WHERE box_number <> 0 \
-        ) tlb001 \
-        GROUP BY lot \
-        )  \
-        SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl5.box_class \
-        FROM tbl1 \
-        LEFT JOIN tbl2 \
-        ON tbl2.lot = tbl1.a_lot \
-        LEFT JOIN tbl3 \
-        ON tbl3.lot = tbl1.a_lot \
-        LEFT JOIN tbl5 \
-        ON tbl5.lot = tbl1.a_lot \
-        WHERE quality_id <> 0 \
-        ORDER BY quality_id DESC"
-
-        df_a4 = pd.read_sql(query, conn)
-
+        df_a4 = pd.read_csv('a4_storage.txt')
         # fill empty cells in wafer info
         df_a4['wafer_info'].fillna("Unbekannt", inplace=True)
 
@@ -750,55 +624,8 @@ def set_cities_value(available_options2):
              Input('Q-plot-third-radio-item', 'value')]
              )
 def q_plot_generator(time_period, second_value, third_value):
-    conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
-                           user='WebServer',
-                           password='W3bS3rv3r',
-                           database='ZNGFinalTest')
-    query_Q_plot = "WITH tbl1 AS ( \
-    SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
-    FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-    LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-    ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-    LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-    ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-    WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-    ), \
-    tbl2 AS ( \
-    SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-    FROM \
-    ( \
-    SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-    FROM ZNGProduction.catuno.tbl_wafers \
-    WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-    ) tbl0 \
-    GROUP BY lot \
-    ), \
-    tbl3 AS ( \
-    SELECT ZNGFinalTest.quality.vw_lots.release, ZNGFinalTest.quality.vw_lots.scrapped, ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
-    FROM ZNGFinalTest.quality.vw_last_comments \
-    JOIN ZNGFinalTest.quality.vw_lots \
-    ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
-    JOIN ZNGFinalTest.quality.tbl_classes \
-    ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-    ), \
-    tbl4 AS ( \
-    SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-    FROM ZNGFinalTest.final_test3.tbl_summaries \
-    GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
-    ) \
-    SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
-    FROM tbl1 \
-    LEFT JOIN tbl2 \
-    ON tbl2.lot = tbl1.a_lot \
-    LEFT JOIN tbl3 \
-    ON tbl3.lot = tbl1.a_lot \
-    LEFT JOIN tbl4 \
-    ON tbl4.lot = tbl1.a_lot \
-    WHERE quality_id <> 0 \
-    ORDER BY quality_id DESC"
-
-    df_Q_plot = pd.read_sql(query_Q_plot, conn)
-
+    df_Q_plot = pd.read_csv("q_plot.txt")
+    df_Q_plot['create_date'] = pd.to_datetime(df_Q_plot['create_date'])
     df_Q_plot['year'] =  df_Q_plot['create_date'].dt.year
     df_Q_plot['month'] = df_Q_plot['create_date'].dt.month
     df_Q_plot['week'] = df_Q_plot['create_date'].dt.week
@@ -1480,56 +1307,8 @@ def callback_image(time_period, second_value, third_value, clicked_bar, page_cur
     else:
         clicked_data_month = clicked_bar['points'][0]['label']
 
-    conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
-                           user='WebServer',
-                           password='W3bS3rv3r',
-                           database='ZNGFinalTest')
-
-    query_Q_table = "WITH tbl1 AS ( \
-    SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, ZNGProduction.catuno.tbl_lots.ba, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, ZNGProduction.catuno.tbl_products.article \
-    FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-    LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-    ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-    LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-    ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-    WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-    ), \
-    tbl2 AS ( \
-    SELECT lot, STRING_AGG(CAST(wafer_info AS NVARCHAR(MAX)), '; ') AS wafer_info \
-    FROM \
-    ( \
-    SELECT lot, wafer_lot + ': ' + CAST(wafer_quantity as VARCHAR(100))  + '(' + probed + ')' AS wafer_info \
-    FROM ZNGProduction.catuno.tbl_wafers \
-    WHERE lot NOT LIKE '2%' AND lot NOT LIKE '3%' AND lot NOT LIKE '40%' AND lot NOT LIKE '41%' AND lot NOT LIKE '42%' \
-    ) tbl0 \
-    GROUP BY lot \
-    ), \
-    tbl3 AS ( \
-    SELECT ZNGFinalTest.quality.vw_lots.release, ZNGFinalTest.quality.vw_lots.scrapped, ZNGFinalTest.quality.vw_lots.quality_id, ZNGFinalTest.quality.vw_lots.lot, comment, cause, ZNGFinalTest.quality.vw_lots.wps, ZNGFinalTest.quality.vw_lots.fa, ZNGFinalTest.quality.vw_lots.edit_user,  ZNGFinalTest.quality.vw_last_comments.date, ZNGFinalTest.quality.tbl_classes.class_name, ZNGFinalTest.quality.vw_lots.create_user, ZNGFinalTest.quality.vw_lots.create_date \
-    FROM ZNGFinalTest.quality.vw_last_comments \
-    JOIN ZNGFinalTest.quality.vw_lots \
-    ON ZNGFinalTest.quality.vw_lots.quality_id = ZNGFinalTest.quality.vw_last_comments.quality_id \
-    JOIN ZNGFinalTest.quality.tbl_classes \
-    ON ZNGFinalTest.quality.tbl_classes.class_id = ZNGFinalTest.quality.vw_lots.class_id \
-    ), \
-    tbl4 AS ( \
-    SELECT DISTINCT ZNGFinalTest.final_test3.tbl_summaries.lot, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.workplace AS NVARCHAR(MAX)), '; ') AS workplace, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.tester AS NVARCHAR(MAX)), '; ') AS tester, STRING_AGG(CAST(ZNGFinalTest.final_test3.tbl_summaries.operator AS NVARCHAR(MAX)), '; ') AS operator \
-    FROM ZNGFinalTest.final_test3.tbl_summaries \
-    GROUP BY ZNGFinalTest.final_test3.tbl_summaries.lot \
-    ) \
-    SELECT tbl1.a_lot, tbl1.ba, tbl1.device, tbl2.wafer_info, tbl1.device_group, tbl1.department, tbl1.package, tbl1.bond_wire, tbl3.release, tbl3.scrapped, tbl1.ship_package, tbl1.uk_input, tbl1.final_test_input, tbl1.final_test_para_fails, tbl1.final_test_gross_fails, tbl1.final_test_output, tbl1.final_test_yield, tbl1.delivery_date, CASE WHEN tbl3.quality_id IS NULL THEN '0' ELSE tbl3.quality_id END AS quality_id, tbl3.wps, tbl3.fa, CASE WHEN tbl3.class_name = 'Qualität allg. / Zuverlässigkeit' THEN 'Allg. & ZVR.' WHEN tbl3.class_name = 'nicht klassifiziert' THEN 'N.K.' ELSE tbl3.class_name END AS class_name, REPLACE(REPLACE(tbl3.cause, '<div>', ''), '</div>', '') AS cause, REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(tbl3.comment, '<div>',''), '</div>', '.'), '<br>','; '), '</font>',''), '&gt;', '<'), '-&lt;','>') AS comment,  REPLACE(REPLACE(tbl3.edit_user, 'EU\\', ''), '_', '-') AS edit_user, tbl3.date AS edit_date, REPLACE(REPLACE(tbl3.create_user, 'EU\\', ''), '_', '-') AS create_user, tbl3.create_date, tbl4.operator, tbl4.tester, tbl4.workplace, tbl1.transistor_type, tbl1.chip_configuration, tbl1.lead_frame, tbl1.soft_solder, tbl1.bond_wire2, tbl1.article \
-    FROM tbl1 \
-    LEFT JOIN tbl2 \
-    ON tbl2.lot = tbl1.a_lot \
-    LEFT JOIN tbl3 \
-    ON tbl3.lot = tbl1.a_lot \
-    LEFT JOIN tbl4 \
-    ON tbl4.lot = tbl1.a_lot \
-    WHERE quality_id <> 0 \
-    ORDER BY quality_id DESC"
-
-    df_Q_table = pd.read_sql(query_Q_table, conn)
-
+    df_Q_table = pd.read_csv("q_table.txt")
+    df_Q_table['create_date'] = pd.to_datetime(df_Q_table['create_date'])
     df_Q_table['year'] =  df_Q_table['create_date'].dt.year
     df_Q_table['month'] = df_Q_table['create_date'].dt.month
     df_Q_table['week'] = df_Q_table['create_date'].dt.week

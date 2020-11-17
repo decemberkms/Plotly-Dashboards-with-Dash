@@ -1,0 +1,92 @@
+﻿Typ,Lot,Waferinformation,affected,bonding_goods,Ausfallursache,create_date,create_user,Status,edit_date,edit_user
+<strong>ZHT431F01TA-AU</strong><br><br>Q-ID: <strong>      1152</strong><br>FA: O \ WPS: X,604842;,"9Z24ANNAL.5: <br>2(unprobed)<br>, 9Z28COOPS.6: <br>1(ringprobed)<br>",28 k,60k ,Qualität allg. / Zuverlässigkeit: ,2020-07-23 09:34:33.173,\agent three,"<div>Draht ragt aus Gehäuse heraus, Eintrag im Maschinenbuch Drahtklammer gewechselt</div>
+
+<div>FA: 7 BE aus TP2 geöffnet</div>
+
+<div>Loopfehler an GND-Draht, Wedge lose</div>
+
+<div>breitgedrückte Bondkugeln/golf clubs an V_in- &amp; V_ref-Bonds</div>
+
+<div>TP1 iO (&gt;99%), <font color=red>TP2: Verschrottungsprotokoll </font></div>",2020-08-17 09:42:28.970,\agent one
+<strong>ZXMP10A13FTA-CU</strong><br><br>Q-ID: <strong>      1199</strong><br>FA: O \ WPS: X,610460;,9Z14GOFER.6: <br>7(probed)<br>,0 k,134k ,Ausbeute: <div>Bondtoolabdruck</div>,2020-08-24 10:46:09.540,\agent two,"<div>Kappenversatz Verplasten </div>
+
+<div>TP1-2,5 auf 608 dann auf 1023 (Kappenversatz kommt nicht in Schiene von 608)</div>
+
+<div>TP3 erhöhter TA</div>
+
+<div><font color=red>FA: Bondtoolabdrücke sowohl im Ausfall TP3 als auch TP1-2,5 </font></div>
+
+<div><font color=red>TP2 Ausgurten und bis Montag in TC: nach 6k NM abgebrochen 4xTA (auch Bondtoolabdrücke)</font></div>
+
+<div><font color=red>Verschrotten</font></div>",2020-08-31 15:07:37.230,\agent two
+<strong>ZXMP4A16GQTA-AU</strong><br><br>Q-ID: <strong>      1201</strong><br>FA: X \ WPS: X,610483;,9Y47TOAST.4: <br>13(probed)<br>,32 k,62k ,Prozessfehler: ,2020-08-25 09:40:11.987,\agent four,"<div>TP 1/2 deformiertes Trägerband durch überspritzte BE</div>
+
+<div>Ausbeutecheck TP2</div>",2020-08-27 16:00:30.013,\agent two
+<strong>FMMT491TA-79-AU</strong><br><br>Q-ID: <strong>      1209</strong><br>FA: X \ WPS: X,614504;,9Z29GROUP.4: <br>2(unprobed)<br>,12 k,64k ,Prozessfehler: ,2020-08-28 10:44:23.663,\agent three,"<div>TP1 Bondoffset, Probestück TP1 in Ordnung, Ende vom TTP1 nicht schön aber auch noch nicht kritisch </div>
+
+<div>63k ausgeliefert 10.9.</div>",2020-10-22 11:56:54.677,\agent one
+<strong>FZT1051ATA-CU</strong><br><br>Q-ID: <strong>      1224</strong><br>FA: O \ WPS: X,614601;,9Y43BRATS.6: <br>8(unprobed)<br>,0 k,71k ,Ausbeute: ,2020-09-07 12:16:52.413,\agent two,"<div>während NM GW/TA wurde GW--&gt; TA</div>
+
+<div>CE-Kurzschlüsse, ungeprobte Wafer</div>
+
+<div><font color=red>FA: Bondtoolabdrücke</font></div>
+
+<div>3k NM: keine Ausfälle</div>
+
+<div><font color=red>TP2 verschrotten</font> (Großteil der CE Kurzschlüsse)</div>",2020-09-08 15:19:02.220,\agent two
+<strong>ZXCT1008FTA-AU</strong><br><br>Q-ID: <strong>      1225</strong><br>FA: X \ WPS: X,616207;,9Z39LICHI.2: <br>16(probed)<br>,0 k,239k ,Qualität allg. / Zuverlässigkeit: <div>Crateringcheck</div>,2020-09-08 11:16:53.360,\agent one,"<div>TP2 6/24 Cratering meist Vsense+ aber auch andere Bondpads, Spur 2 (1.Drahtbonder) Linie 5</div>
+
+<div>TP4 6/20 Cratering</div>
+
+<div>nach TP4 Bondsettings geändert Spur 2: 15 -&gt; 13%US</div>
+
+<div>Ausbeutecheck 69%: 20% Iout, 13% Grenzwert -&gt; ?</div>
+
+<div>90k ausgeliefert 30.9.</div>
+
+<div><font color=red>TP 1+2 Bin14 über SBL -&gt; Kugelhalsbrüche -&gt; Verschrottungsprotokoll Ingo</font></div>",2020-10-07 17:33:52.093,\agent one
+<strong>BSP75NQTA-AU</strong><br><br>Q-ID: <strong>      1268</strong><br>FA: O \ WPS: X,621607;,"9Z44CABLE.7: <br>5(ringprobed)<br>, 9Z44CABLE.8: <br>17(unprobed)<br>, 9Z44CABLE.6: <br>1(ringprobed)<br>, 9Z44CABLE.5: <br>1(probed)<br>",0 k,131k ,Q-Fehler: <div>BVDSS</div>,2020-10-01 09:25:17.630,\agent one,"<div>1 QF BVDSS: 20V statt 60-70V (10mA)</div>
+
+<div>weiche Kennlinie, dann DS-Kurzschluss</div>
+
+<div>FA: aufliegende S-Bonddrähte</div>
+
+<div>TP1 gesperrt (1 QF, 1200 Stück Totalausfall, 300 St Grenzwert ID_BVDSS, Ausbeute 94%)</div>
+
+<div>TP2-4 freigegeben (~99% Ausbeute) </div>
+
+<div>Decap Ausfall: niedergedrückte Source Bonddrähte in Totalausfall + Grenzwert, 2x auch Drain-Draht beschädigt/gerissen</div>
+
+<div>Bond + Mould keine Eintragungen <font color=red>- Ursache?</font></div>
+
+<div><font color=red>TP1 verschrotten</font></div>",2020-10-07 11:56:14.147,\agent one
+<strong>ZTX1049A-AU</strong><br><br>Q-ID: <strong>      1281</strong><br>FA: X \ WPS: X,614401;,9Z27MOOSE.4: <br>2(unprobed)<br>,0 k,17k ,Qualität allg. / Zuverlässigkeit: ,2020-10-08 10:43:19.650,\agent two,"<div>~2% TA (EB-Kurzschlüsse)</div>
+
+<div>gleiche Wafercharge wie 600622 (verschrottet nach TC+NM: 16xEB-Kurzschlüsse)</div>
+
+<div><font color=red>geperrt</font></div>",2020-10-08 10:51:46.060,\agent two
+<strong>FMMT722TA-CU</strong><br><br>Q-ID: <strong>      1302</strong><br>FA: O \ WPS: X,629242;,9Z21THINE.4: <br>6(unprobed)<br>,0 k,113k ,Ausbeute: <div>Blown on test</div>,2020-10-26 11:16:09.047,\agent six,"<div>Blown on Test 3.8% (TP1); nur TP1 hat hoch blown on test</div>
+
+<div>4k NM auf 105 ca 5% Ausfälle (GW, TA,BoT): BVCEO ~0,5V</div>
+
+<div>FA: Bondkugeln versetzt (konsistenter Offset)-&gt; Collector-Emitter Kurzschlüsse</div>
+
+<div>-&gt;<font color=red> Kapillaroffset?</font></div>
+
+<div><font color=red>TP1 Verschrotten</font></div>",2020-10-30 12:58:47.570,\agent one
+<strong>ZXTN25100DGTA-PD</strong><br><br>Q-ID: <strong>      1309</strong><br>FA: O \ WPS: X,631178;,9Z03MYOPE.7: <br>7(probed)<br>,0 k,145k ,Prozessfehler: <div>Cratering an E-Bondpad</div>,2020-11-02 13:01:50.137,\agent two,"<div>~60% Yield</div>
+
+<div>&quot;falscher&quot; Draht sollte eigentlich nur noch mit Gold gebondet werden</div>
+
+<div>&nbsp;Hfe (+IEBO) bzw. ICBO, ICEV (cratering Verdacht, da mit CuPd Draht)</div>
+
+<div>1 QJ (EB-Schluss)</div>
+
+<div><font color=red>FA: Cratering (erst nach Sirtl Ätzen)</font></div>",2020-11-04 15:34:54.750,\agent two
+<strong>FMMT720TA-CU</strong><br><br>Q-ID: <strong>      1312</strong><br>FA: O \ WPS: X,631134;,9Z30ALIVE.5: <br>7(unprobed)<br>,0 k,133k ,Ausbeute: <div>Blown on test</div>,2020-11-04 08:12:47.347,\agent six,"<div>Blown on test 1%; unprobed Wafer</div>
+
+<div>EB-Kurzschluss</div>
+
+<div>braucht Aufmachen</div>
+
+<div>FA TH: Bondkugel versetzt gebondet-&gt; <font color=red>Sperre für alle Teilposten</font></div>",2020-11-04 15:40:43.100,\agent five
