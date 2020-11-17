@@ -459,34 +459,36 @@ def update_selected_row(rows, derived_virtual_data):
     dff = pd.DataFrame.from_dict({'a_lot':[1,2,3], 'aaa': [4,5,6]}) if rows is None else pd.DataFrame(rows)
     # print(dff)
     # print(dff.iloc[derived_virtual_data]['a_lot'])
-    conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
-                           user='WebServer',
-                           password='W3bS3rv3r',
-                           database='ZNGFinalTest')
-    query_selected = "WITH tbl1 AS ( \
-    SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, \
-    ZNGProduction.catuno.tbl_products.article \
-    FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
-    LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
-    ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
-    LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
-    ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
-    WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
-    ), \
-    tbl5 AS ( \
-    SELECT DISTINCT ZNGProduction.catuno.tbl_lots.ba, ZNGProduction.catuno.tbl_lots.lot, ZNGProduction.catuno.tbl_manufacture.workstep_id, ZNGProduction.catuno.tbl_manufacture.workstep_name, ZNGProduction.catuno.tbl_manufacture.input, ZNGProduction.catuno.tbl_manufacture.reject, ZNGProduction.catuno.tbl_manufacture.output, ZNGProduction.catuno.tbl_manufacture.date AS done_date \
-    FROM ZNGProduction.catuno.tbl_manufacture \
-    FULL JOIN ZNGProduction.catuno.tbl_lots \
-    ON ZNGProduction.catuno.tbl_lots.ba = ZNGProduction.catuno.tbl_manufacture.ba \
-    ) \
-    SELECT DISTINCT tbl1.a_lot, tbl5.ba, tbl1.device, tbl5.workstep_id, tbl5.workstep_name, tbl5.input, tbl5.reject, tbl5.output, tbl5.done_date \
-    FROM tbl1 \
-    JOIN tbl5 \
-    ON tbl5.lot = tbl1.a_lot \
-    WHERE device <> 'FMMT614' AND workstep_id IS NOT NULL AND a_lot NOT LIKE 'Z%' AND a_lot = '{}'\
-    ORDER BY a_lot DESC, workstep_id, input DESC".format(dff.iloc[derived_virtual_data]['a_lot'].values[0])
-
-    selected_lot_process = pd.read_sql(query_selected, conn)
+    # conn = pymssql.connect(server='ZNGERP01\\ZNGFINALTEST',
+    #                        user='WebServer',
+    #                        password='W3bS3rv3r',
+    #                        database='ZNGFinalTest')
+    # query_selected = "WITH tbl1 AS ( \
+    # SELECT ZNGProduction.catuno.tbl_lots.lot AS a_lot, device, device_group, department, package, bond_wire, ship_package, uk_input, final_test_input, final_test_para_fails, final_test_gross_fails, final_test_output, final_test_yield, delivery_date, ZNGProduction.catuno.tbl_products.lead_frame, ZNGProduction.catuno.tbl_products.transistor_type, ZNGProduction.catuno.tbl_products.chip_configuration, ZNGProduction.catuno.tbl_products.soft_solder, ZNGProduction.catuno.tbl_products.bond_wire2, \
+    # ZNGProduction.catuno.tbl_products.article \
+    # FROM ZNGProduction.catuno.vw_yield  /*yield*/ \
+    # LEFT JOIN ZNGProduction.catuno.tbl_lots /*product for connection*/ \
+    # ON ZNGProduction.catuno.vw_yield.ba = ZNGProduction.catuno.tbl_lots.ba \
+    # LEFT JOIN ZNGProduction.catuno.tbl_products /*package and die device group*/ \
+    # ON ZNGProduction.catuno.tbl_products.product = ZNGProduction.catuno.tbl_lots.product \
+    # WHERE (package <> 'STACK') AND (package <> 'DIODE') AND (lot <> '430101') AND (lot <> '378471') AND (lot <> 'FST866FTA') AND (device_group <> 'REST') \
+    # ), \
+    # tbl5 AS ( \
+    # SELECT DISTINCT ZNGProduction.catuno.tbl_lots.ba, ZNGProduction.catuno.tbl_lots.lot, ZNGProduction.catuno.tbl_manufacture.workstep_id, ZNGProduction.catuno.tbl_manufacture.workstep_name, ZNGProduction.catuno.tbl_manufacture.input, ZNGProduction.catuno.tbl_manufacture.reject, ZNGProduction.catuno.tbl_manufacture.output, ZNGProduction.catuno.tbl_manufacture.date AS done_date \
+    # FROM ZNGProduction.catuno.tbl_manufacture \
+    # FULL JOIN ZNGProduction.catuno.tbl_lots \
+    # ON ZNGProduction.catuno.tbl_lots.ba = ZNGProduction.catuno.tbl_manufacture.ba \
+    # ) \
+    # SELECT DISTINCT tbl1.a_lot, tbl5.ba, tbl1.device, tbl5.workstep_id, tbl5.workstep_name, tbl5.input, tbl5.reject, tbl5.output, tbl5.done_date \
+    # FROM tbl1 \
+    # JOIN tbl5 \
+    # ON tbl5.lot = tbl1.a_lot \
+    # WHERE device <> 'FMMT614' AND workstep_id IS NOT NULL AND a_lot NOT LIKE 'Z%' AND a_lot = '{}'\
+    # ORDER BY a_lot DESC, workstep_id, input DESC".format(dff.iloc[derived_virtual_data]['a_lot'].values[0])
+    #
+    # selected_lot_process = pd.read_sql(query_selected, conn)
+    # selected_lot_process.to_csv('selected_lot.txt')
+    selected_lot_process = pd.read_csv('selected_lot.txt')
     # data cleaning
     ## datetime to StringIO
     selected_lot_process['done_date'] = selected_lot_process['done_date'].astype(str)
